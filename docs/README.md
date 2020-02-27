@@ -25,22 +25,23 @@
     > <img src="./gcp_ai_built-in-algorithms.png" width="400">
 
   * Data 선정
-    | Dataset | Usage | Categories | Image Size | Data Size |
-    | :------ | :------ | :------ | :------ | :------ |
-    | __**MS Coco**__ | Obejct Segmentation Recognition in context | 80 classes | 640x480 | 330K images, 200K labeled, 42.7GB |
-    | ~~CIFAR100~~ | Image Classification/ Object Recognition | 20 classes</br>(100 subclasses) | ~~32x32~~ | 50k(training)/10k(test) images, ~~161 MB~~ |
-    | ImageNet | Image Classification/ Object Recognition | 1K classes | 469x397(Avg.) | 1.4M images, >200GB |
-    | Core50 | __*Continual*__ Learning and Object Recognition, Detection, Segmentation | 50 classes | 350x350</br>(128x128 cropped) | 164K images, 25.8GB |
+    | Dataset | Usage | Categories | Image Size | Data Size | misc. |
+    | :------ | :------ | :------ | :------ | :------ | :--- |
+    | __**MS Coco**__ | Obejct Segmentation Recognition in context | 80 classes | 640x480 | 330K images, 200K labeled, 42.7GB | http://cocodataset.org/#download |
+    | ~~CIFAR100~~ | Image Classification/ Object Recognition | 20 classes</br>(100 subclasses) | ~~32x32~~ | 50k(training)/10k(test) images, ~~161 MB~~ | |
+    | ImageNet | Image Classification/ Object Recognition | 1K classes | 469x397(Avg.) | 1.4M images, >200GB | |
+    | Core50 | __*Continual*__ Learning and Object Recognition, Detection, Segmentation | 50 classes | 350x350</br>(128x128 cropped) | 164K images, 25.8GB | |
 
       - 기타 데이터셋 참고
         * [deeplearning.net](http://deeplearning.net/datasets/)
         * [pathmind.com](https://pathmind.com/wiki/open-datasets)
 
+ * GCP AI Platform-Jobs에서 `training_data`는 __**`*.TFRecord`**__여야 함. [ref.](https://cloud.google.com/ai-platform/training/docs/algorithms/reference/object-detection)
 
   * 분석업무 예시 수립
 
 * Cloud Service 활용 예시 작성
-  * GCP
+  * [GCP](https://console.cloud.google.com/ai-platform/create-job/built-in?authuser=1&project=ds-ai-platform)
   * [Azure ML Studio(Preview)](https://ml.azure.com/visualinterface/authoring/Normal/7b2c2cc3-fbf6-4fbc-ad5f-6d6e3fad57d4?wsid=/subscriptions/5c48f2ce-c4d7-487f-9027-7c3cc6878f24/resourcegroups/am-rgroup/workspaces/aml-test&tid=ce4d6c9f-ae3d-4308-86ca-1171c59fcf8e)
 
 
