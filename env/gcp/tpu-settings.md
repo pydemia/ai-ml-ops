@@ -53,6 +53,7 @@ gsutil -m cp ./data/dir/coco/val*.tfrecord ${STORAGE_BUCKET}/val
 gsutil -m cp ./data/dir/coco/test*.tfrecord ${STORAGE_BUCKET}/test
 gsutil -m cp ./data/dir/coco/unlabeled*.tfrecord ${STORAGE_BUCKET}/unlabeled
 
-gsutil cp ./data/dir/coco/raw-data/annotations/*.json ${STORAGE_BUCKET}/coco
+gsutil cp -r ./data/dir/coco/raw-data/annotations ${STORAGE_BUCKET}
+
 
 ```
