@@ -21,11 +21,11 @@ ctpu up -machine-type "n1-standard-8" -name "yjkim-tpu"
 
 > Splitting a TFRecords file into multiple shards has essentially 3 advantages:
 > 
-> * Easier to shuffle. 
+> * Easier to shuffle.  
 >   As others have pointed out, it makes it easy to shuffle the data at a coarse level (before using a shuffle buffer).
-> * Faster to download.
+> * Faster to download.  
 >   If the files are spread across multiple servers, downloading several files from different servers in parallel will optimize bandwidth usage (rather than downloading one file from a single server). This can improve performance significantly compared to downloading the data from a single server.
-> * Simpler to manipulate.
+> * Simpler to manipulate.  
 >   It's easier to deal with 10,000 files of 100MB each rather than with a single 1TB file. Huge files can be a pain to handle: in particular, transfers are much more likely to fail. It's also harder to manipulate subsets of the data when it's all in a single file.
 
 
