@@ -48,7 +48,11 @@ export STORAGE_BUCKET=gs://yjkim-dataset/images/mscoco-gcp
 cd /usr/share/tpu/tools/datasets
 sudo bash /usr/share/tpu/tools/datasets/download_and_preprocess_coco.sh ./data/dir/coco
 
-gsutil -m cp ./data/dir/coco/*.tfrecord ${STORAGE_BUCKET}/coco
+gsutil -m cp ./data/dir/coco/train*.tfrecord ${STORAGE_BUCKET}/train
+gsutil -m cp ./data/dir/coco/val*.tfrecord ${STORAGE_BUCKET}/val
+gsutil -m cp ./data/dir/coco/test*.tfrecord ${STORAGE_BUCKET}/test
+gsutil -m cp ./data/dir/coco/unlabeled*.tfrecord ${STORAGE_BUCKET}/unlabeled
+
 gsutil cp ./data/dir/coco/raw-data/annotations/*.json ${STORAGE_BUCKET}/coco
 
 ```
