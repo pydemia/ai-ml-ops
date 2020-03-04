@@ -40,7 +40,55 @@ gsutil cp -r ./data ${STORAGE_BUCKET}
 
 ```
 
-## COCO
+## ImageNet
+
+Sign up [ImageNet](http://image-net.org/signup)
+
+```sh
+export DATA_DIR=gs://yjkim-dataset/images/imagenet-gcp
+
+wget https://raw.githubusercontent.com/tensorflow/tpu/master/tools/datasets/imagenet_to_gcs.py
+
+export SCRATCH_DIR=./imagenet
+
+
+export PROJECT=[PROJECT_NAME]
+
+pip install google-cloud-storage
+python imagenet_to_gcs.py \
+  --project=$PROJECT \
+  --gcs_output_path=$DATA_DIR \
+  --local_scratch_dir=$SCRATCH_DIR \
+  --imagenet_username=[USERNAME] \
+  --imagenet_access_key=[PASSWORD]
+
+
+pip install google-cloud-storage
+
+python imagenet_to_gcs.py \
+  --project=$PROJECT \
+  --gcs_output_path=$DATA_DIR \
+  --local_scratch_dir=$SCRATCH_DIR \
+  --imagenet_username=pydemia \
+  --imagenet_access_key=zxc0201
+
+
+cd /usr/share/tpu/tools/datasets
+sudo bash /usr/share/tpu/tools/datasets/download_and_preprocess_coco.sh ./data/dir/coco
+
+gsutil -m cp ./data/dir/coco/train*.tfrecord ${STORAGE_BUCKET}/train
+gsutil -m cp ./data/dir/coco/val*.tfrecord ${STORAGE_BUCKET}/val
+gsutil -m cp ./data/dir/coco/test*.tfrecord ${STORAGE_BUCKET}/test
+gsutil -m cp ./data/dir/coco/unlabeled*.tfrecord ${STORAGE_BUCKET}/unlabeled
+
+gsutil cp -r ./data/dir/coco/raw-data/annotations ${STORAGE_BUCKET}
+
+
+```
+
+
+
+## MS-COCO
 
 ```sh
 export STORAGE_BUCKET=gs://yjkim-dataset/images/mscoco-gcp
