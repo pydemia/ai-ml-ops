@@ -63,16 +63,20 @@ python imagenet_to_gcs.py \
   --imagenet_access_key=[PASSWORD]
 
 
-pip install google-cloud-storage
+pip2 install google-cloud-storage absl-py tensorflow
+pip install google-cloud-storage absl-py tensorflow
 
-python imagenet_to_gcs.py \
+python2 imagenet_to_gcs.py \
   --project=$PROJECT \
   --gcs_output_path=$DATA_DIR \
   --local_scratch_dir=$SCRATCH_DIR \
   --imagenet_username=pydemia \
   --imagenet_access_key=zxc0201
 
-
+python imagenet_to_gcs.py \
+  --local_scratch_dir=$SCRATCH_DIR \
+  --nogcs_upload
+  
 cd /usr/share/tpu/tools/datasets
 sudo bash /usr/share/tpu/tools/datasets/download_and_preprocess_coco.sh ./data/dir/coco
 
@@ -84,6 +88,15 @@ gsutil -m cp ./data/dir/coco/unlabeled*.tfrecord ${STORAGE_BUCKET}/unlabeled
 gsutil cp -r ./data/dir/coco/raw-data/annotations ${STORAGE_BUCKET}
 
 
+wget https://raw.githubusercontent.com/tensorflow/models/master/research/inception/inception/data/download_and_preprocess_imagenet.sh
+mkdir imagenet
+sudo bash download_and_preprocess_imagenet.sh imagenet
+
+
+wget https://raw.githubusercontent.com/kmonachopoulos/ImageNet-to-TFrecord/master/build_imagenet_data.py
+mkdir -p imagenet/val
+
+python build_imagenet_data.py -validation_directory val -output_directory path-of-tf-record-directory
 ```
 
 
