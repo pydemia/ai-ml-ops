@@ -22,7 +22,7 @@ The [scripts](scripts) is a collection of code scripts & snippets.
   - gcp
 * repo
 * scenario
-  - dl(GPU)
+  - dl (GPU)
     * RetinaNet
 * scripts
   - python
