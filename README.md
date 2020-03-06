@@ -2,13 +2,14 @@
 
 This repository contains a number of different guides & configurations about ML-ops Dev Environment.
 
-The [official models](official) are a collection of example models that use TensorFlow's high-level APIs. They are intended to be well-maintained, tested, and kept up to date with the latest stable TensorFlow API. They should also be reasonably optimized for fast performance while still being easy to read. We especially recommend newer TensorFlow users to start here.
+The [documentations](docs) are a collection of documents of this repository.
 
-The [research models](https://github.com/tensorflow/models/tree/master/research) are a large collection of models implemented in TensorFlow by researchers. They are not officially supported or available in release branches; it is up to the individual researchers to maintain the models and/or provide support on issues and pull requests.
+The [environments](env) are a list of configurations among the cloud service providers & on-premise.
 
-The [samples folder](samples) contains code snippets and smaller models that demonstrate features of TensorFlow, including code presented in various blog posts.
+The [repository](repo) contains a number of repositories required to set `ml-ops` systems.
 
-The [tutorials folder](tutorials) is a collection of models described in the [TensorFlow tutorials](https://www.tensorflow.org/tutorials/).
+The [analysis scenarios](scenario) contain code snippets and smaller models that demonstrate features of TensorFlow, including code presented in various blog posts.
 
+The [scripts](scripts) is a collection of code scripts & snippets.
 ## Table of Contents
 
