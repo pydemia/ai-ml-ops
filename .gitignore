@@ -1,4 +1,7 @@
 # User-defined
+/config.code-workspace
+.vscode/
+
 data/mscoco*
 data/fake-imagenet*
 **/.git*
