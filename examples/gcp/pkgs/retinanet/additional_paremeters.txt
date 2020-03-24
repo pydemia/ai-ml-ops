@@ -1,0 +1,98 @@
+TPU_NAME="<your GCP TPU name>"
+MODEL_DIR="<path to the directory to store model files>"
+RESNET_CHECKPOINT="<path to the pre-trained Resnet-50 checkpoint>"
+TRAIN_FILE_PATTERN="<path to the TFRecord training data>"
+EVAL_FILE_PATTERN="<path to the TFRecord validation data>"
+VAL_JSON_FILE="<path to the validation annotation JSON file>"
+python ~/models/official/vision/detection/main.py \
+  --strategy_type=tpu \
+  --tpu="${TPU_NAME?}" \
+  --model_dir="${MODEL_DIR?}" \
+  --mode=train \
+  --params_override="{ type: retinanet, train: { checkpoint: { path: ${RESNET_CHECKPOINT?}, prefix: resnet50/ }, train_file_pattern: ${TRAIN_FILE_PATTERN?} }, eval: { val_json_file: ${VAL_JSON_FILE?}, eval_file_pattern: ${EVAL_FILE_PATTERN?} } }"
+
+
+
+
+python3 ~/models/official/vision/detection/main.py \
+  --strategy_type=mirrored \
+  --num_gpus=8 \
+  --model_dir="${MODEL_DIR?}" \
+  --mode=train \
+  --config_file="my_retinanet.yaml"
+
+
+python3 ~/models/official/vision/detection/main.py \
+  --model_dir=<model folder> \
+  --strategy_type=one_device \
+  --num_gpus=1 \
+  --mode=train \
+  --params_override="eval:
+ eval_file_pattern: <Eval TFRecord file pattern>
+ batch_size: 8
+ val_json_file: <COCO format groundtruth JSON file>
+predict:
+ predict_batch_size: 8
+architecture:
+ use_bfloat16: False
+retinanet_parser:
+ use_bfloat16: Flase
+train:
+ total_steps: 1
+ batch_size: 8
+ train_file_pattern: <Eval TFRecord file pattern>
+use_tpu: False
+"
+
+#--tpu=<your GCP TPU name>
+
+--model_dir=<model folder>
+--strategy_type=<one_device or mirrored>
+--num_gpus=10
+--mode=train
+--params_override="type: 'retinanet'
+train:
+  train_file_pattern: <path to the TFRecord training data>
+  total_steps: 100
+  batch_size: 32
+  chechpoint:
+    path: <path to the pre-trained Resnet-50 checkpoint>
+    prefix: resnet50_ckpt/
+eval:
+  eval_file_pattern: <path to the TFRecord validation data>
+  val_json_file: <path to the validation annotation JSON file>
+eval:
+ eval_file_pattern: <Eval TFRecord file pattern>
+ val_json_file: <COCO format groundtruth JSON file>
+ batch_size: 8
+predict:
+ predict_batch_size: 8
+architecture:
+ use_bfloat16: False
+retinanet_parser:
+ use_bfloat16: Flase
+use_tpu: False
+"
+
+
+#yjkim-models/examples/gcp/built-in/tf-models-official-0.0.3.dev1.tar.gz
+#yjkim-models/examples/gcp/built-in/official-0.0.3.dev1.tar.gz
+yjkim-models/examples/gcp/built-in/official-0.0.3.dev1-py3-none-any.whl
+
+official.vision.detection.main
+
+yjkim-repository/dependencies/gcp/python/req-models/Cython-0.29.15-cp37-cp37m-manylinux1_x86_64.whl
+yjkim-repository/dependencies/gcp/python/req-models/pre_coco-0.1.tar.gz
+#yjkim-repository/dependencies/gcp/python/req-models/pycocotools-2.0.tar.gz
+
+yjkim-outputs/aiplatform-jobs/custom-obejct-detection/test_00/
+
+
+--model_dir=gs://yjkim-outputs/aiplatform-jobs/custom-obejct-detection/test-00/model_dir/
+--strategy_type=mirrored
+--num_gpus=4
+--mode=train
+--params_override="{ type: "retinanet", train: { train_file_pattern: "gs://yjkim-dataset/images/mscoco-tfrecord/train/*.tfrecord", total_steps: 100, batch_size: 32, chechpoint: { "path": "gs://yjkim-repository/dependencies/gcp/python/req-models/", prefix: "resnet50_ckpt/" } }, eval: { eval_file_pattern: "gs://yjkim-dataset/images/mscoco-tfrecord/val/*.tfrecord", val_json_file: "gs://yjkim-dataset/images/mscoco-tfrecord/annotations/instances_val2017.json", batch_size: 8 }, architecture: { use_bfloat16: false }, retinanet_parser: { use_bfloat16: false }, use_tpu: false }"
+
+
+custom_retinanet_test11

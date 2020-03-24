@@ -1,0 +1,20 @@
+# my_retinanet.yaml
+type: 'retinanet'
+train:
+  train_file_pattern: gs://yjkim-dataset/images/mscoco-tfrecord/train/*.tfrecord
+  total_steps: 100
+  batch_size: 32
+  chechpoint:
+    path: gs://yjkim-repository/dependencies/gcp/python/req-models/
+    prefix: resnet50_ckpt/
+eval:
+  eval_file_pattern: gs://yjkim-dataset/images/mscoco-tfrecord/val/*.tfrecord
+  val_json_file: gs://yjkim-dataset/images/mscoco-tfrecord/annotations/instances_val2017.json
+  batch_size: 8
+predict:
+  predict_batch_size: 8
+architecture:
+  use_bfloat16: False
+retinanet_parser:
+  use_bfloat16: False
+use_tpu: False
