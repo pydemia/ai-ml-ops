@@ -1,3 +1,12 @@
+# User-defined
+data/mscoco*
+data/fake-imagenet*
+**/.git*
+!/.git*
+
+**/.git/**
+!/.git/**
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -26,3 +26,7 @@ The [scripts](scripts) is a collection of code scripts & snippets.
     * RetinaNet
 * scripts
   - python
+
+
+${fileDirname}
+${workspaceFolder}
