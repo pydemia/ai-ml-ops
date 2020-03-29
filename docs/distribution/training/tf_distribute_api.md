@@ -48,7 +48,7 @@ Tensorflow 구성요소들인
 | `machine` | 장비. 보통 VM. |
 | `device` | CPU, GPU, TPU 등. `tensorflow`가 돌아가는 장비의 부분.<br>(ex. 1 VM에 2 GPU -> 1 장비에 2 device) |
 | `replica` | 한 Input Slice를 돌리는 모델 사본 하나.<br>지금은 `모델 병렬화`가 구현되지 않아서 1 `worker device`에서만 돌아감.<br>model parallelism이 구현되면 복수의 `worker device` 위에 존재 가능.
-| `worker` | 복제된 계산이 돌아가는 `물리적 device`(CPU, TPU)를 담고 있는 `물리적 장비`.<br>1 `worker`는 1개 이상의 `replica`를 갖고 있음. |
+| `worker` | 복제된 계산이 돌아가는 `물리적 device`(CPU, TPU)를 담고 있는 `물리적 장비`.<br>1 `worker`는 1개 이상의 `replica`를 갖고 있음.<br>보통 1 `worker`는 1 장비에 대응하지만,<br>`모델 병렬화`가 적용된 큰 모델에서는 1 `worker`가 2개 이상의 장비 위에 존재할 수 있음. |
 | `host` | `worker device`가 있는 장비의 `CPU device`. 보통 `input pipeline`을 돌리기 위해 사용. |
 | `parameter` | 모델을 구성요소로 존재하는 값 ( _trainable_ \| _un-trainable_ ) |
 | `variable` | Training이 가능한 변수(weight 등). `trainable parameter`. |
@@ -73,28 +73,17 @@ Tensorflow 구성요소들인
 | `tf.estimator` | tf2.x 이전부터 사용되던 tensorflow high-level API. |
 
 
+### 기타 용어 사전
 
-- `worker device`: 계산하는 device.
-  - `parameter device`: _variable_ 을 보관하는 device.
-  - `tf.distribute.MirroredStrategy`: `worker device` == `parameter device`
-  - `tf.distribute.experimental.CentralStorageStrategy`: 1 `parameter device`를 가진다.(`worker device`이거나 `CPU`)
-  - `tf.distribute.experimental.ParameterServerStrategy`: `parameter server`를 별도로 두어 _variable_ 보관. |
-| 
-* `machine`: 장비. 보통 VM.
-* `device`: CPU, GPU, TPU 등. `tensorflow`가 돌아가는 machine의 부분.
-  (ex. 1 VM에 2 GPU -> 1 장비에 2 device)
   - `worker device`: 계산하는 device.
   - `parameter device`: _variable_ 을 보관하는 device.
   - `tf.distribute.MirroredStrategy`: `worker device` == `parameter device`
   - `tf.distribute.experimental.CentralStorageStrategy`: 1 `parameter device`를 가진다.(`worker device`이거나 `CPU`)
   - `tf.distribute.experimental.ParameterServerStrategy`: `parameter server`를 별도로 두어 _variable_ 보관.
-* `replica`: 한 Input Slice를 돌리는 모델 사본 하나. 지금은 `모델 병렬화`가 구현되지 않아서 1 `worker device`에서만 돌아감. model parallelism이 구현되면 복수의 `worker device` 위에 존재 가능.
-* `worker`: 복제된 계산이 돌아가는 `물리적 device`(CPU, TPU)를 담고 있는 `물리적 장비`. 1 `worker`는 1개 이상의 `replica`를 갖고 있음.
-  보통 1 `worker`는 1 장비에 대응하지만, `모델 병렬화`가 적용된 큰 모델에서는 1 `worker`가 2개 이상의 장비 위에 존재할 수 있음.
-  대개 1 `worker`마다 1 `input pipeline`을 붙여서, 이 `worker`에 속한 모든 `replica`에 데이터를 feeding함.
+
 * `데이터 병렬화(Data Parallelism)`: 복수의 모델 사본을 다른 Input Slice에 적용하는 것.
 * `모델 병렬화(Model Parallelism)`: 단일 모델 사본을 복수의 `device`에 적용하는 것.(향후 지원 예정)
-* `host`: `worker device`가 있는 장비의 `CPU device`. 보통 `input pipeline`을 돌리기 위해 사용.
+
 * `synchronous training` or `sync training`: 모델 _variable_ 업데이트 전, 각각 `replica`를 취합하는 부분. 각 `replica`가 독립적으로 모델 _variable_ 을 업데이트하는 `async training`과는 정 반대이며, `replica`를 그룹으로 partitioning해서 그룹 내는 `sync`, 그룹끼리는 독립적으로(`async`) 구성할 수도 있다.
 * `parameter server`: _parameter_ 와 _variable_ 사본을 보관하는 1개 이상의 장비.  `tf.distribute.experimental.ParameterServerStrategy`에서 쓰임.  
   각 `replica`는 1 step 시작할 때 _variable_ 을 받아 와서, step 끝에 업데이트된 값으로 새로 보내게 됨(`sync`/`async`에 따라 달라지며, 지금은 `async`만 지원).
@@ -237,7 +226,11 @@ os.environ["TF_CONFIG"] = json.dumps({
         "worker": ["host1:port", "host2:port", "host3:port"],
         "ps": ["host4:port", "host5:port"]
     },
-   "task": {"type": "worker", "index": 1}  # 2번째 worker라는 뜻(0부터)
+   "task": {
+       "type": "worker",  # worker 중에
+       "index": 1,        # 2번째(0부터)
+       "trial": 1         # (Optional) Hyper-parameter tunning trial number, at least 1
+    }
 })
 ```
 
