@@ -50,7 +50,7 @@ Tensorflow 구성요소들인
 | `replica` | 한 Input Slice를 돌리는 모델 사본 하나.<br>지금은 `모델 병렬화`가 구현되지 않아서 1 `worker device`에서만 돌아감.<br>model parallelism이 구현되면 복수의 `worker device` 위에 존재 가능.
 | `worker` | 복제된 계산이 돌아가는 `물리적 device`(CPU, TPU)를 담고 있는 `물리적 장비`.<br>1 `worker`는 1개 이상의 `replica`를 갖고 있음.<br>보통 1 `worker`는 1 장비에 대응하지만,<br>`모델 병렬화`가 적용된 큰 모델에서는 1 `worker`가 2개 이상의 장비 위에 존재할 수 있음. |
 | `host` | `worker device`가 있는 장비의 `CPU device`. 보통 `input pipeline`을 돌리기 위해 사용. |
-| `parameter` | 모델을 구성요소로 존재하는 값 ( _trainable_ \| _un-trainable_ ) |
+| `parameter` | 모델의 구성요소로 존재하는 값 ( _trainable_ \| _un-trainable_ ) |
 | `variable` | Training이 가능한 변수(weight 등). `trainable parameter`. |
 | `strategy` | 분산 Training 전략. 분산 방법 및 `parameter` 취합, 업데이트, 보관 방식을 포괄함. |
 
