@@ -84,4 +84,6 @@ Development:
   * PyTorch -> TensorRT
 
 
-
+```sh
+gcloud beta compute ssh --zone "us-central1-a" "yjkim-dl-tensorrt-tf2-1-template-1" --project "ds-ai-platform"
+```
