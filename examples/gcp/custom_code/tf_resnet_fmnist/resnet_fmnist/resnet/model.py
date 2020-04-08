@@ -19,9 +19,10 @@ from __future__ import print_function
 import numpy as np
 
 import tensorflow as tf
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Flatten
+from tensorflow.keras import layers
 from tensorflow.python.keras import models
+from . import model_resnet
+
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -37,10 +38,23 @@ def keras_estimator(model_dir, config, learning_rate):
   Returns:
     A keras.Model
   """
-  model = models.Sequential()
-  model.add(Flatten(input_shape=(28, 28)))
-  model.add(Dense(128, activation=tf.nn.relu))
-  model.add(Dense(10, activation=tf.nn.softmax))
+  # model = models.Sequential()
+  # model.add(Flatten(input_shape=(28, 28)))
+  # model.add(Dense(128, activation=tf.nn.relu))
+  # model.add(Dense(10, activation=tf.nn.softmax))
+
+  
+  model = model_resnet.ResNet50(
+    include_top=True,
+    weights=None,  # 'imagenet',
+    input_tensor=None,
+    input_shape=None,
+    pooling=None,  # {None, 'avg', 'max'}
+    classes=10,  # 1000,
+    **kwargs,
+  )
+
+
 
   # Compile model with learning parameters.
   optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)

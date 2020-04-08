@@ -33,6 +33,11 @@ ONNX version|File format version|Opset version ai.onnx|Opset version ai.onnx.ml|
 1.6.0|6|11|2|-
 1.7.0|7|12|2|1
 
+`gsutil -m cp gs://yjkim-repository/python_packages/onnx-1.7.0-cp37-cp37m-linux_x86_64.whl ./`
+`gsutil -m cp gs://yjkim-repository/python_packages/onnx-1.7.0.linux-x86_64.tar.gz ./`
+`gsutil -m cp gs://yjkim-repository/python_packages/onnx-1.7.0.tar.gz ./`
+
+
 
 * tensorrt
 
@@ -59,6 +64,7 @@ sudo apt-key add /var/nv-tensorrt-repo-${tag}/7fa2af80.pub
 
 sudo apt-get update
 sudo apt-get install libnvinfer7
+sudo apt-get install protobuf-compiler libprotoc-dev
 
 ```
 
@@ -85,5 +91,5 @@ Development:
 
 
 ```sh
-gcloud beta compute ssh --zone "us-central1-a" "yjkim-dl-tensorrt-tf2-1-template-1" --project "ds-ai-platform"
+gcloud beta compute ssh --zone "us-central1-a" "yjkim-dl-gpu-template-1" --project "ds-ai-platform"
 ```

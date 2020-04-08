@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "/home/pydemia/git/ai-ml-ops"
+		},
+		{
+			"path": "C:\\Users\\pydemia\\git\\ai-ml-ops"
+		}
+	],
+	"settings": {
+		"python.pythonPath": "/home/pydemia/apps/anaconda3/envs/bin/tf2-py37",
+		"python.terminal.activateEnvironment": true,
+		"python.envFile": "${workspaceFolder}/pyrun.env",
+		"git.ignoreLimitWarning": true,
+		"python.terminal.activateEnvInCurrentTerminal": true,
+		"terminal.integrated.shell.linux": "zsh"
+	}
+}
