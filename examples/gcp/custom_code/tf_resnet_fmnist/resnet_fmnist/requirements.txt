@@ -1,3 +1,0 @@
-tensorflow==1.12
-setuptools==39.1.0
-Keras-Applications==1.0.8

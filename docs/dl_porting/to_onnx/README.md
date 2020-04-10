@@ -225,6 +225,7 @@ python -m tf2onnx.convert  \
 * `protobuf(ldconfig)`
 * `parsing error`
 
+
 ```sh
 'Value "{}" is not valid attribute data type.'.format(value))
 ValueError: Value "name: "__inference_signature_wrapper_22170"

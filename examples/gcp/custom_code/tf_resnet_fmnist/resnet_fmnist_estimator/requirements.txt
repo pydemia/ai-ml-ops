@@ -1,0 +1,4 @@
+setuptools==39.1.0
+requests==2.19.1
+tensorflow>=2.1
+Keras-Applications==1.0.8
