@@ -50,27 +50,72 @@ Use `TensorRT` to accelerate inference of a pre-trained model.
 
 ### 1. `tensorflow` -> `onnx`
 
-API Type:
-* tf-native
-  - low/mid level API (with `tf.Session`, `tf.layer`)
-  - high-level API
-    * `tf.estimator`
-    * tf.keras
-      * `tf` only(no deps)
-      * dep: `keras.io`(ex. `tf.keras.applications`)
+#### Cases
+* API Dependency
+  * **__tf-native__**
+    - **_low/mid level API_**(`tf_core_layers`=`tf.layers.core`)
+      `tf.Session`, `tf.layer`, etc.
+    - **_high-level API_**
+      * `tf.estimator`
+      * `tf.keras` no deps
+        (Since `tf >= 1.12`, `tf.layers` are merely wrappers around `tf.keras.layers`.)
+        <br>
+  * **__`keras` dependent__** (before implemented in `tf.layers.core`: `tf < 1.12`)
+    - **_mid level API_** (`tf.keras.layers`)
+    - **_high-level API_**
+      * `tf.keras`
+        * dep: `keras.io`(ex. `tf.keras.applications`)
+<br>
 
-Versions:
-* `tf-1.x`
-* `tf-2.x`
+* Versions
+  * `tf-1.x`
+    * `1.11`
+    * ~~`1.12`~~
+    * `1.15`
+  * `tf-2.x`
+    * `2.1`
+<br>
 
-Device Type:
-* GPU
-  * Single-GPU
-  * Multi-GPU
+* Save Format:
+  * Checkpoint(ckpt)
+  * Frozen Graph & GraphDef
+  * SavedModel
+
+<br>
+
+* Device Type:
+  * GPU
+    * Single-GPU Code
+    * Multi-GPU Code
+
+---
+
+#### Test
+
+<div class="alert alert-block alert-info">
+
+> * Case: 
+>   1. `1.15`
+>      1.1 low/mid level(`tf_core only`)
+>      1.2 high level(`tf.estimator`)
+>      1.3 `tf.keras.applications`
+>   2. `2.1`
+>      2.1 `tf.keras`
+>      2.2 `tf.keras.applications`
+>   3. `1.12`
+>      3.1 low/mid level(`tf_core only`)
+>      3.2 high level(`tf.estimator`)
+
+<b>Tip:</b> Use blue boxes (alert-info) for tips and notes.</div>
 
 
 
-DL Frameworks
+
+`onnx=1.6, 1.7`
+
+---
+
+### DL Frameworks
 
 * Tensorflow == 1.12-1.15, 2.1 (onnx opset == 7-11)
 * ~~PyTorch(Caffe2) 1.4~~
