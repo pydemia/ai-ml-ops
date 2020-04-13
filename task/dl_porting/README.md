@@ -40,6 +40,7 @@ Use `TensorRT` to accelerate inference of a pre-trained model.
 | ~~`pytorch`~~ | ~~`tensorrt`~~ |
 | ~~`caffe`~~ | ~~`tensorrt`~~ |
 
+
 #### Task List
 
   1. `tensorflow` -> `onnx`
@@ -80,13 +81,15 @@ Use `TensorRT` to accelerate inference of a pre-trained model.
   * Checkpoint(ckpt)
   * Frozen Graph & GraphDef
   * SavedModel
+  * HDF5
 
 <br>
 
 * Device Type:
   * GPU
-    * Single-GPU Code
-    * Multi-GPU Code
+    * Single-GPU (1 VM)
+    * Multi-GPU (1 VM)
+    * Cluster Mode (VMs)
 
 ---
 
@@ -94,17 +97,21 @@ Use `TensorRT` to accelerate inference of a pre-trained model.
 
 <div class="alert alert-block alert-info">
 
-> * Case: 
->   1. `1.15`
->      1.1 low/mid level(`tf_core only`)
->      1.2 high level(`tf.estimator`)
->      1.3 `tf.keras.applications`
->   2. `2.1`
->      2.1 `tf.keras`
->      2.2 `tf.keras.applications`
->   3. `1.12`
->      3.1 low/mid level(`tf_core only`)
->      3.2 high level(`tf.estimator`)
+> * Case:  
+>   1. `1.15`  
+>      1.1 low/mid level(`tf_core only`)  
+>      1.2 high level(`tf.estimator`)  
+>      1.3 keras-apps(`tf.keras.applications`)  
+>   2. `2.1`  
+>      2.1 low/mid level(`tf_core only`)
+>      2.2 high level(`tf.keras`)  
+>      2.3 keras-apps(`tf.keras.applications`)  
+>   3. `1.11`  
+>      3.1 low/mid level(`tf_core only`)  
+>      3.2 high level(`tf.estimator`)  
+> 
+> to `ckpt`, `graph`, `savedModel.pb`
+
 
 <b>Tip:</b> Use blue boxes (alert-info) for tips and notes.</div>
 
@@ -139,3 +146,30 @@ Use `TensorRT` to accelerate inference of a pre-trained model.
 ```sh
 gcloud beta compute ssh --zone "us-central1-a" "yjkim-dl-gpu-template-1" --project "ds-ai-platform"
 ```
+
+
+
+> Checkpoint: 
+> The above code stores the weights to a collection of checkpoint-formatted files that contain only the trained weights in a binary format.
+
+> Checkpoints contain:
+> * One or more shards that contain your model's weights.
+> * An index file that indicates which weights are stored in a which shard.
+> If you are only training a model on a single machine, you'll have one shard with the suffix: `.data-00000-of-00001`
+> 
+> When restoring a model from weights-only, **__you must have a model with the same architecture as the original model.__** Since it's the same model architecture, you can share weights despite that it's a different instance of the model.
+
+---
+
+> Keras saves models by inspecting the architecture. 
+> This technique saves everything:
+> 
+> * The weight values
+> * The model's architecture
+> * The model's training configuration(what you passed to compile)
+> * The optimizer and its state, if any (this enables you to restart training where you left)
+
+> Keras is not able to save the `v1.x` optimizers (from `tf.compat.v1.train`) since they aren't compatible with checkpoints. For `v1.x` optimizers, **__you need to re-compile the model after loading—losing the state of the optimizer.__**
+
+
+SavedModel & HDF5 support TensorFlow.js and TensorFlow Lite.
