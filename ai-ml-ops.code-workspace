@@ -13,6 +13,11 @@
 		"python.envFile": "${workspaceFolder}/pyrun.env",
 		"git.ignoreLimitWarning": true,
 		"python.terminal.activateEnvInCurrentTerminal": true,
-		"terminal.integrated.shell.linux": "zsh"
-	}
+		"terminal.integrated.shell.linux": "zsh",
+		"terminal.integrated.shellArgs.linux": [
+			"-l"
+		],
+		"docker.host": "unix:///var/run/docker.sock"
+	},
+	"terminal.integrated.env.linux": {}
 }

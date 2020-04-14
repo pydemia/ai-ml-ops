@@ -1,0 +1,20 @@
+[Unit]
+Desciption=Jupyter Notebook
+
+[Service]
+Type=simple
+PIDFile=/run/jupyter.pid
+# ExecStart=/home/pydemia/apps/anaconda3/bin/jupyter notebook
+# --config=/home/pydemia/.jupyter/jupyter_notebook_config.py
+# --debug
+
+ExecStart=/bin/bash -c "/home/pydemia/apps/anaconda3/bin/jupyter notebook --config=/home/pydemia/.jupyter/jupyter_notebook_config.py --debug > /home/pydemia/.jupyter/logs/notebook.log 2>&1"
+
+User=pydemia
+Group=pydemia
+WorkingDirectory=/home/pydemia
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

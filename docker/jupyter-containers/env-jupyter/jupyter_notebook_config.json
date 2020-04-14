@@ -1,0 +1,11 @@
+{
+    "NotebookApp": {
+        "nbserver_extensions": {
+            "jupyter_nbextensions_configurator": true,
+            "nbgrader.server_extensions.formgrader": true,
+            "nbgrader.server_extensions.validate_assignment": true,
+            "nbgrader.server_extensions.assignment_list": true,
+            "jupyter_tensorboard": true
+        }
+    }
+}
