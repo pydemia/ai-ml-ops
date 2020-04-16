@@ -133,7 +133,7 @@ RUN export JAVA_HOME
 # Install node.js & npm
 RUN apt-get update && \
     # apt-get -y install curl gnupg && \
-    curl -sL https://deb.nodesource.com/setup  | bash - && \
+    curl -sL https://deb.nodesource.com/setup_12.x  | bash - && \
     apt-get -y install nodejs && \
     npm install -g npm
 
