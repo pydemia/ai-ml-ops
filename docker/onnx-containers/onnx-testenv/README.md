@@ -47,12 +47,11 @@ By following the steps below, you will launch a pre-configured Jupyter Notebook 
 
 6. Navigate to the `converter_scripts` folder in the container and edit the appropriate notebook to convert your model to ONNX, or test the accuracy of the conversion using ONNX Runtime.
 
-# Contributing
+# Get Dependency Tree
 
-This project welcomes contributions and suggestions. For details, please read through the [contributor's guide](https://github.com/onnx/onnx/blob/master/docs/CONTRIBUTING.md) and the [ONNX Open Source Code of Conduct](https://onnx.ai/codeofconduct.html).
-
-## Acknowledgements
-This container was based on an original [ONNX Converter docker container](https://github.com/Microsoft/onnxconverter) from 2018. The updated ecosystem docker container is the result of the efforts of the [ONNXMLTools](https://github.com/onnx/onnxmltools) team.
-
-## License
-[MIT License](https://github.com/onnx/onnx-docker/blob/master/LICENSE)
+```sh
+pip install pipdeptree
+pipdeptree --reverse --packages tensorflow==1.11
+pipdeptree --reverse --packages tensorflow==1.15
+pipdeptree --reverse --packages tensorflow==2.1
+```

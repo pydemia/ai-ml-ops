@@ -10,6 +10,14 @@ data/fake-imagenet*
 **/.git/**
 !/.git/**
 
+models/**
+!models/README.md
+
+models/began_origin
+models/dcgan_origin
+models/embeddings
+models/seq2seq
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
