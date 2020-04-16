@@ -148,8 +148,8 @@ RUN npm install -g @bazel/bazelisk && \
 
 RUN git clone https://github.com/tensorflow/tensorflow && \
         cd tensorflow && \
-        bazel build tensorflow/tools/graph_transforms:summarize_graph \
-            --action_env PYTHON_BIN_PATH=/usr/bin/python3 \
+        bazel build tensorflow/tools/graph_transforms:summarize_graph
+            #--action_env PYTHON_BIN_PATH=/usr/bin/python3
             #--host_javabase=@local_jdk//:jdk
 RUN ln -s "$(pwd)/bazel-bin/tensorflow/tools/graph_transforms/summarize_graph" \
     /usr/local/bin/summarize_graph
