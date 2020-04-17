@@ -7,72 +7,98 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y sudo \
     build-essential curl \
+    vim htop \
     libcurl4-openssl-dev \
     libssl-dev wget \
-    python3-pip \
-    git && \
+    git \
+    python3-pip && \
     pip3 install --upgrade pip
 
-RUN mkdir scripts && \
-        cd scripts && \
-        mkdir converter_scripts && \
-        mkdir inference_demos
-COPY converter_scripts/ scripts/converter_scripts/
-COPY inference_demos/ scripts/inference_demos/
-# COPY requirements-tf1-15.txt requirements.txt
 
 # Set Locale
 RUN apt-get update -y && \
     apt-get install -y locales && \
     locale-gen --purge "en_US.UTF-8"
 
-RUN bash -c "echo 'LC_ALL=en_US.UTF-8' >> /etc/environment"
-RUN bash -c "echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen"
-RUN bash -c "echo 'LANG=en_US.UTF-8' > /etc/locale.conf"
+
+RUN echo 'LC_ALL=en_US.UTF-8' >> /etc/environment
+RUN echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
+RUN echo 'LANG=en_US.UTF-8' > /etc/locale.conf
+
+
+SHELL ["/bin/bash", "-c"]
+
 
 # Install Conda
-RUN wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh \
-        -O install_conda3_py37.sh
-RUN bash -c "echo 'export CONDA_PATH=\"/opt/conda\"' >> /etc/profile"
-RUN bash -c "echo 'export PATH=\"\$CONDA_PATH/bin:\$CONDA_PATH/sbin:\$CONDA_PATH/condabin:\$PATH\"' >> /etc/profile"
-# RUN source /etc/profile
-# RUN source /etc/bash.bashrc
 
-ENV CONDA_PATH "/opt/conda"
-ENV PATH "$CONDA_PATH/bin:$CONDA_PATH/sbin:$CONDA_PATH/condabin:$PATH"
-
-RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
+RUN apt-get update --fix-missing && \
+    apt-get install -y \
+    wget bzip2 ca-certificates \
     libglib2.0-0 libxext6 libsm6 libxrender1 \
     git mercurial subversion
 
 RUN apt-get install -y \
-        libgl1-mesa-glx libegl1-mesa \
-        libxrandr2 libxrandr2 libxss1 \
-        libxcursor1 libxcomposite1 libasound2 \
-        libxi6 libxtst6
+    libgl1-mesa-glx libegl1-mesa \
+    libxrandr2 libxrandr2 libxss1 \
+    libxcursor1 libxcomposite1 libasound2 \
+    libxi6 libxtst6
 
-RUN bash ./install_conda3_py37.sh \
+ENV CONDA_PATH "/opt/conda"
+ENV PATH "$CONDA_PATH/bin:$CONDA_PATH/sbin:$CONDA_PATH/condabin:$PATH"
+
+
+RUN wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh \
+        -O install_conda3_py37.sh
+RUN echo 'export CONDA_PATH="/opt/conda"' >> /etc/profile
+RUN echo 'export PATH="$CONDA_PATH/bin:$CONDA_PATH/sbin:$CONDA_PATH/condabin:$PATH"' >> /etc/profile
+
+# RUN source /etc/profile
+# RUN source /etc/bash.bashrc
+
+
+# RE-source `profile`
+SHELL ["/bin/bash", "-c"]
+
+#ENV PATH '$CONDA_PATH/bin:$CONDA_PATH/sbin:$CONDA_PATH/condabin:$PATH'
+
+ARG CONDA_USER="pydemia"
+ARG CONDA_GROUP="conda"
+#ARG CONDA_UID="1000"
+#ARG CONDA_GID="100"
+
+RUN groupadd $CONDA_GROUP && \
+    #useradd -m -G conda -p $(openssl passwd -1 password) pydemia && \
+    useradd -m -G $CONDA_GROUP $CONDA_USER && \
+    usermod -a -G $CONDA_GROUP $CONDA_USER && \
+    usermod -a -G $CONDA_GROUP root
+
+RUN sg - $CONDA_GROUP "bash ./install_conda3_py37.sh \
     -b \
-    -p $CONDA_PATH && \
+    -p $CONDA_PATH" && \
     rm ./install_conda3_py37.sh && \
     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
-RUN mkdir /usr/local/share/jupyter
-RUN groupadd conda && \
-    chgrp -R conda $CONDA_PATH && \
-    chmod 770 -R $CONDA_PATH && \
-    chgrp -R conda /usr/local/share/jupyter && \
-    chmod 770 -R /usr/local/share/jupyter && \
-    usermod -a -G conda root
+
+RUN mkdir $CONDA_PATH/.jupyter
+COPY jupyter_notebook_config.py $CONDA_PATH/.jupyter/jupyter_notebook_config.py
+
+RUN mkdir /usr/local/share/jupyter && \
+    chgrp -R $CONDA_GROUP /usr/local/share/jupyter && \
+    chmod 770 -R /usr/local/share/jupyter
+
+# --- Replaced with `SG - $CONDA_GROUP "bash ./install_conda3_py37.sh" ---
+# RUN chgrp -R $CONDA_GROUP $CONDA_PATH && \
+# RUN chmod 770 -R $CONDA_PATH
 
 
 # Install tf2
-SHELL ["/bin/bash", "--login", "-c"]
 
 RUN conda init bash
 RUN conda init zsh
+
+SHELL ["/bin/bash", "-c"]
 
 
 COPY requirements-tf1-15.txt requirements-tf1-15.txt
@@ -96,7 +122,6 @@ RUN ./install_new_kernel.sh \
 # Install Python Requirements
 # RUN pip3 install -r requirements.txt
 
-SHELL ["/bin/bash", "-c"]
 
 # Install "software-properties-common" (for the "add-apt-repository")
 RUN apt-get update && \
@@ -124,10 +149,10 @@ RUN apt-get update && \
     apt-get install -y default-jdk && \
     apt-get clean;
 
-# 
+
 # Setup JAVA_HOME -- useful for docker commandline
 ENV JAVA_HOME /usr/lib/jvm/default-java
-RUN export JAVA_HOME
+RUN echo 'export JAVA_HOME="/usr/lib/jvm/default-java"' >> /etc/profile
 
 
 # Install node.js & npm
@@ -145,9 +170,12 @@ RUN npm install -g @bazel/bazelisk && \
 #         -O /usr/local/bin/bazel && \
 #         chmod +x /usr/local/bin/bazel
 
+ARG WORKDIR="/scripts"
 
-RUN git clone https://github.com/tensorflow/tensorflow && \
-        cd tensorflow && \
+RUN mkdir $WORKDIR
+
+RUN git clone https://github.com/tensorflow/tensorflow $WORKDIR/tensorflow && \
+        cd $WORKDIR/tensorflow && \
         bazel build tensorflow/tools/graph_transforms:summarize_graph
             #--action_env PYTHON_BIN_PATH=/usr/bin/python3
             #--host_javabase=@local_jdk//:jdk
@@ -155,10 +183,23 @@ RUN ln -s "$(pwd)/bazel-bin/tensorflow/tools/graph_transforms/summarize_graph" \
     /usr/local/bin/summarize_graph
 
 
+RUN cd $WORKDIR && \
+    mkdir converter_scripts && \
+    mkdir inference_demos
+COPY converter_scripts/ scripts/converter_scripts/
+COPY inference_demos/ scripts/inference_demos/
+# COPY requirements-tf1-15.txt requirements.txt
+
 
 WORKDIR /scripts
 
 EXPOSE 8888
 
 # Launch Jupyter notebook
-CMD ["jupyter", "notebook", "--allow-root", "--port=8888", "--ip=0.0.0.0", "--no-browser"]
+SHELL ["/bin/bash", "--login", "-c"]
+
+# Make RUN commands use the new environment:
+# SHELL ["conda", "run", "-n", "myenv", "/bin/bash", "-c"]
+
+ARG CONDA_PATH="/opt/conda"
+CMD ["jupyter", "notebook", "--allow-root", "--port=8888", "--ip=0.0.0.0", "--no-browser", "--config=$CONDA_PATH/.jupyter/jupyter_notebook_config.py"]

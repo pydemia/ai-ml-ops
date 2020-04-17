@@ -35,89 +35,89 @@ for i in "$@"; do
   esac
 done
 
-USAGE='
--v      PY_VER="3.7"
--n      CONDA_ENV_NM="py37-tf2-1"
--d      CONDA_DISP_NM="Python3.7-tf2.1 (conda env)"
--e      BASE_ENVFILE="conda_envfile.yaml"
--r      PIP_PKG_REQ="requirements.txt"
-'
+# USAGE='
+# -v      PY_VER="3.7"
+# -n      CONDA_ENV_NM="py37-tf2-1"
+# -d      CONDA_DISP_NM="Python3.7-tf2.1 (conda env)"
+# -e      BASE_ENVFILE="conda_envfile.yaml"
+# -r      PIP_PKG_REQ="requirements.txt"
+# '
 
-if which getopt > /dev/null 2>&1; then
-    OPTS=$(getopt hvn:der "$*" 2>/dev/null)
-    if [ ! $? ]; then
-        printf "%s\\n" "$USAGE"
-        exit 2
-    fi
+# if which getopt > /dev/null 2>&1; then
+#     OPTS=$(getopt hvn:der "$*" 2>/dev/null)
+#     if [ ! $? ]; then
+#         printf "%s\\n" "$USAGE"
+#         exit 2
+#     fi
 
-    eval set -- "$OPTS"
+#     eval set -- "$OPTS"
 
-    while true; do
-        case "$1" in
-            -h)
-                printf "%s\\n" "$USAGE"
-                exit 2
-                ;;
-            -v)
-                PY_VER="$2"
-                shift
-                ;;
-            -n)
-                CONDA_ENV_NM="$2"
-                shift
-                ;;
-            -d)
-                CONDA_DISP_NM="$2"
-                shift
-                shift
-                ;;
-            -e)
-                BASE_ENVFILE="$2"
-                shift
-                ;;
-            -r)
-                PIP_PKG_REQ="$2"
-                shift
-                ;;
-            --)
-                shift
-                break
-                ;;
-            *)
-                printf "ERROR: did not recognize option '%s', please try -h\\n" "$1"
-                exit 1
-                ;;
-        esac
-    done
-else
-    while getopts "hvn:der" x; do
-        case "$x" in
-            h)
-                printf "%s\\n" "$USAGE"
-                exit 2
-            ;;
-            v)
-                PY_VER="3.7"
-                ;;
-            n)
-                CONDA_ENV_NM="py37-tf2-1"
-                ;;
-            d)
-                CONDA_DISP_NM="Python3.7-tf2.1 (conda env)"
-                ;;
-            e)
-                BASE_ENVFILE=""
-                ;;
-            r)
-                PIP_PKG_REQ=""
-                ;;
-            ?)
-                printf "ERROR: did not recognize option '%s', please try -h\\n" "$x"
-                exit 1
-                ;;
-        esac
-    done
-fi
+#     while true; do
+#         case "$1" in
+#             -h)
+#                 printf "%s\\n" "$USAGE"
+#                 exit 2
+#                 ;;
+#             -v)
+#                 PY_VER="$2"
+#                 shift
+#                 ;;
+#             -n)
+#                 CONDA_ENV_NM="$2"
+#                 shift
+#                 ;;
+#             -d)
+#                 CONDA_DISP_NM="$2"
+#                 shift
+#                 shift
+#                 ;;
+#             -e)
+#                 BASE_ENVFILE="$2"
+#                 shift
+#                 ;;
+#             -r)
+#                 PIP_PKG_REQ="$2"
+#                 shift
+#                 ;;
+#             --)
+#                 shift
+#                 break
+#                 ;;
+#             *)
+#                 printf "ERROR: did not recognize option '%s', please try -h\\n" "$1"
+#                 exit 1
+#                 ;;
+#         esac
+#     done
+# else
+#     while getopts "hvn:der" x; do
+#         case "$x" in
+#             h)
+#                 printf "%s\\n" "$USAGE"
+#                 exit 2
+#             ;;
+#             v)
+#                 PY_VER="3.7"
+#                 ;;
+#             n)
+#                 CONDA_ENV_NM="py37-tf2-1"
+#                 ;;
+#             d)
+#                 CONDA_DISP_NM="Python3.7-tf2.1 (conda env)"
+#                 ;;
+#             e)
+#                 BASE_ENVFILE=""
+#                 ;;
+#             r)
+#                 PIP_PKG_REQ=""
+#                 ;;
+#             ?)
+#                 printf "ERROR: did not recognize option '%s', please try -h\\n" "$x"
+#                 exit 1
+#                 ;;
+#         esac
+#     done
+# fi
 
 
 if [[ -n $CONDA_DISP_NM ]]; then

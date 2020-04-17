@@ -17,7 +17,8 @@
 		"terminal.integrated.shellArgs.linux": [
 			"-l"
 		],
-		"docker.host": "unix:///var/run/docker.sock"
+		"docker.host": "unix:///var/run/docker.sock",
+		"docker.defaultRegistryPath": "pydemia"
 	},
 	"terminal.integrated.env.linux": {}
 }
