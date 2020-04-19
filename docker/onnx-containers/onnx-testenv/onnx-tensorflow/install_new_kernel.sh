@@ -133,36 +133,34 @@ echo "PIP_PKG_REQ=$PIP_PKG_REQ"
 
 
 if [[ -z $BASE_ENVFILE ]]; then
-  conda create -n "$CONDA_ENV_NM" python="$PY_VER" -y
+  conda create -n "$CONDA_ENV_NM" python="$PY_VER" -y --quiet
 else
   # envsubst < "$BASE_ENVFILE" > "conda_envfile.yaml" && \
-  conda env create \
+  conda env create  --quiet \
     -n $CONDA_ENV_NM \
     python=$PY_VER \
     --file $BASE_ENVFILE
+  
 fi
 
-conda activate $CONDA_ENV_NM && \
-conda install ipykernel -y && \
-python -m ipykernel install \
-  --name $CONDA_ENV_NM \
-  --display-name $CONDA_DISP_NM
 
 if [[ -n $PIP_PKG_REQ ]]; then
-  pip install -r $PIP_PKG_REQ \
+  $CONDA_PATH/envs/$CONDA_ENV_NM/bin/pip install \
+    -r $PIP_PKG_REQ \
     --ignore-installed
 fi
 
-# pip install tensorflow-gpu==2.1 #tensorflow==2.1
-conda install -c conda-forge protobuf -y
-# pip install onnx==1.7.0
-# gsutil -m cp gs://yjkim-repository/python_packages/onnx-1.7.0-cp37-cp37m-linux_x86_64.whl ./
+conda install -n $CONDA_ENV_NM -c conda-forge \
+  protopuf -y
 
-# pip install onnx-1.7.0-cp37-cp37m-linux_x86_64.whl
-# pip install pytorch==1.5
-# pip install -U tf2onnx==1.5.6
 
-conda deactivate
+#python -m ipykernel install --prefix=$CONDA_PATH --name=$CONDA_ENV_NM
+# python -m nb_conda_kernels install $CONDA_PATH/envs/$CONDA_ENV_NM
+$CONDA_PATH/envs/$CONDA_ENV_NM/bin/pip install ipykernel && \
+$CONDA_PATH/envs/$CONDA_ENV_NM/bin/python -m ipykernel install \
+  --prefix=$CONDA_PATH \
+  --name=$CONDA_ENV_NM \
+  --display-name=$CONDA_DISP_NM
 
 
 echo "$CONDA_ENV_NM has been installed."

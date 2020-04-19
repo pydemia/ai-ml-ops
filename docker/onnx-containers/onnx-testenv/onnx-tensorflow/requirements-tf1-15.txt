@@ -1,7 +1,7 @@
 numpy==1.16.0
-jupyter==1.0.0
+# jupyter==1.0.0
 six==1.10.0
-opencv-python==3.2.0.6
+opencv-python>=3.4.5, <4.0
 matplotlib==2.1.1
 pandas==0.24.0
 pillow==7.0.0
@@ -10,6 +10,7 @@ scipy==1.0.0
 coremltools==2.0
 
 tensorflow==1.15.2
+protopuf
 tensorboard
 keras==2.1.6
 keras2onnx
@@ -39,8 +40,7 @@ onnx
 onnxmltools
 onnxruntime
 
-
-
--e git+https://github.com/microsoft/onnxconverter-common
--e git+https://github.com/onnx/keras-onnx
--e git+https://github.com/onnx/onnx
+# git+ssh://git@github.com/{acc-name}/{repo-name}.git@{commit}#egg={package-name}
+-e git+https://github.com/microsoft/onnxconverter-common#egg=onnxconverter-common
+-e git+https://github.com/onnx/keras-onnx#egg=keras2onnx
+-e git+https://github.com/onnx/onnx#egg=onnx
