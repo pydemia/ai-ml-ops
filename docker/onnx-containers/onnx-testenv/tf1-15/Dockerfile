@@ -222,38 +222,48 @@ RUN npm install -g @bazel/bazelisk && \
 
 
 # -------------------------------------------------------------------- #
-ARG WORKDIR="/workspace"
 
 # RUN setfacl -Rm u::rwx,g:$CONDA_GROUP:rwx,m::rwx,o::0 $WORKDIR
+
+ARG WORKDIR="/workspace"
+
 RUN sg - $CONDA_GROUP "mkdir $WORKDIR" && \
     chown root:conda $WORKDIR && \
     chmod g+srwx $WORKDIR
-RUN sg - $CONDA_GROUP "git clone https://github.com/tensorflow/tensorflow $WORKDIR/.repo/tensorflow && \
-    cd $WORKDIR/.repo/tensorflow && \
+
+RUN mkdir /repo
+RUN sg - $CONDA_GROUP "git clone https://github.com/tensorflow/tensorflow /repo/tensorflow && \
+    cd /repo/tensorflow && \
     bazel build tensorflow/tools/graph_transforms:summarize_graph"
     #--action_env PYTHON_BIN_PATH=/usr/bin/python3
     #--host_javabase=@local_jdk//:jdk
-RUN ln -s "$WORKDIR/.repo/tensorflow/bazel-bin/tensorflow/tools/graph_transforms/summarize_graph" \
+RUN ln -s "/repo/tensorflow/bazel-bin/tensorflow/tools/graph_transforms/summarize_graph" \
     /usr/local/bin/summarize_graph
 
 
-RUN sg - $CONDA_GROUP "mkdir -p $WORKDIR/converter_scripts && \
-    mkdir -p $WORKDIR/inference_demos"
+USER $CONDA_USER
+
+
+RUN mkdir -p $WORKDIR
+RUN mkdir -p $WORKDIR/notebooks
+RUN mkdir -p $WORKDIR/converter_scripts && \
+    mkdir -p $WORKDIR/inference_demos
 COPY converter_scripts/ $WORKDIR/converter_scripts/
 COPY inference_demos/ $WORKDIR/inference_demos/
 
+USER root
 RUN chgrp -R $CONDA_GROUP $WORKDIR/converter_scripts/ && \
-    chgrp -R $CONDA_GROUP $WORKDIR/inference_demos/
+    chgrp -R $CONDA_GROUP $WORKDIR/inference_demos/ && \
+    chmod 775 -R $WORKDIR/converter_scripts && \
+    chmod 775 -R $WORKDIR/inference_demos && \
+    chmod 775 -R $WORKDIR/notebooks
 
 
-RUN sg - $CONDA_GROUP "mkdir -p $WORKDIR/notebooks"
-# RUN chmod 775 -R $WORKDIR
 
-
-RUN chgrp -R $CONDA_GROUP $CONDA_PATH && \
-    chmod 770 -R $CONDA_PATH
-RUN chgrp -R $CONDA_GROUP $WORKDIR && \
-    chmod 770 -R $CONDA_PATH
+# RUN chgrp -R $CONDA_GROUP $CONDA_PATH && \
+#     chmod 770 -R $CONDA_PATH
+# RUN chgrp -R $CONDA_GROUP $WORKDIR && \
+#     chmod 770 -R $WORKDIR
 
 
 WORKDIR $WORKDIR
@@ -261,6 +271,7 @@ WORKDIR $WORKDIR
 EXPOSE 8888
 
 #USER $CONDA_USER
+USER root
 
 # Launch Jupyter notebook
 SHELL ["/bin/bash", "-c"]
