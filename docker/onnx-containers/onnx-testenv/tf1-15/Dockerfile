@@ -35,7 +35,7 @@ RUN apt-get update --fix-missing && \
     apt-get install -y \
     wget bzip2 ca-certificates \
     libglib2.0-0 libxext6 libsm6 libxrender1 \
-    git mercurial subversion
+    git mercurial subversion acl
 
 RUN apt-get install -y \
     libgl1-mesa-glx libegl1-mesa \
@@ -46,36 +46,39 @@ RUN apt-get install -y \
 
 ARG CONDA_USER="pydemia"
 ARG CONDA_GROUP="conda"
-#ARG CONDA_UID="1000"
-#ARG CONDA_GID="100"
+# ARG CONDA_UID="1000"
+# ARG CONDA_GID="100"
 
 ENV CONDA_PATH "/opt/conda"
 ENV PATH "$CONDA_PATH/bin:$CONDA_PATH/sbin:$CONDA_PATH/condabin:$PATH"
 
 ENV JUPYTER_CONFIG_DIR "$CONDA_PATH/etc/jupyter"
-# ENV JUPYTER_DATA_DIR "$CONDA_PATH/share/jupyter"
+ENV JUPYTER_DATA_DIR "$CONDA_PATH/share/jupyter"
 # ENV JUPYTER_CONFIG_DIR "/usr/local/etc/jupyter"
-ENV JUPYTER_DATA_DIR "/usr/local/share/jupyter"
+# ENV JUPYTER_DATA_DIR "/usr/local/share/jupyter"
 
 
 # -------------------------------------------------------------------- #
-
-RUN groupadd $CONDA_GROUP && \
+# `-r` option: For system group(gid<1000), which is prior to user group(gid>=1000)
+RUN groupadd -r $CONDA_GROUP && \
     #useradd -m -G conda -p $(openssl passwd -1 password) $CONDA_USER && \
     useradd -m -G $CONDA_GROUP $CONDA_USER && \
-    usermod -a -G $CONDA_GROUP $CONDA_USER && \
+    # usermod -a -G $CONDA_GROUP $CONDA_USER && \
     usermod -a -G $CONDA_GROUP root
 
 
 RUN wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh \
     -O install_conda3_py37.sh
 
+RUN sg - $CONDA_GROUP "mkdir -p $CONDA_PATH" && \
+    chmod g+srwx $CONDA_PATH
+
+# `-u` option: If you want to update an existing installation, use the -u option.
 RUN sg - $CONDA_GROUP "bash ./install_conda3_py37.sh \
-    -b \
-    -p $CONDA_PATH" && \
+        -u \
+        -b \
+        -p $CONDA_PATH" && \
     rm ./install_conda3_py37.sh
-
-
 RUN echo 'export CONDA_PATH=$CONDA_PATH' >> /etc/profile
 RUN echo 'export PATH="$CONDA_PATH/bin:$CONDA_PATH/sbin:$CONDA_PATH/condabin:$PATH"' >> /etc/profile
 RUN ln -s $CONDA_PATH/etc/profile.d/conda.sh /etc/profile.d/conda.sh
@@ -99,6 +102,8 @@ RUN conda init bash && \
 
 USER root
 
+
+# RUN chmod 770 -R $CONDA_PATH
 RUN mkdir -p $JUPYTER_DATA_DIR && \
     chgrp -R $CONDA_GROUP $JUPYTER_DATA_DIR && \
     chmod 770 -R $JUPYTER_DATA_DIR
@@ -116,7 +121,7 @@ RUN sg - $CONDA_GROUP "conda install \
     nb_conda ipykernel ipyparallel -y && \
     conda install -c conda-forge \
     ipywidgets \
-    # nb_conda_kernels \
+    nb_conda_kernels \
     -y && \
     pip install tensorboard jupyter_tensorboard"
 
@@ -197,8 +202,10 @@ RUN npm install -g @bazel/bazelisk && \
 # -------------------------------------------------------------------- #
 ARG WORKDIR="/workspace"
 
-
-RUN sg - $CONDA_GROUP "mkdir $WORKDIR"
+# RUN setfacl -Rm u::rwx,g:$CONDA_GROUP:rwx,m::rwx,o::0 $WORKDIR
+RUN sg - $CONDA_GROUP "mkdir $WORKDIR" && \
+    chown root:conda $WORKDIR && \
+    chmod g+srwx $WORKDIR
 RUN sg - $CONDA_GROUP "git clone https://github.com/tensorflow/tensorflow $WORKDIR/.repo/tensorflow && \
     cd $WORKDIR/.repo/tensorflow && \
     bazel build tensorflow/tools/graph_transforms:summarize_graph"
@@ -218,13 +225,13 @@ RUN chgrp -R $CONDA_GROUP $WORKDIR/converter_scripts/ && \
 
 
 RUN sg - $CONDA_GROUP "mkdir -p $WORKDIR/notebooks"
-
+# RUN chmod 775 -R $WORKDIR
 
 WORKDIR $WORKDIR
 
 EXPOSE 8888
 
-USER $CONDA_USER
+#USER $CONDA_USER
 
 # Launch Jupyter notebook
 SHELL ["/bin/bash", "-c"]

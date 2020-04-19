@@ -146,7 +146,7 @@ fi
 #python -m ipykernel install --prefix=$CONDA_PATH --name=$CONDA_ENV_NM
 # python -m nb_conda_kernels install $CONDA_PATH/envs/$CONDA_ENV_NM
 
-python -m ipykernel install \
+$CONDA_PATH/env/$CONDA_ENV_NM/bin/python -m ipykernel install \
   --prefix=$CONDA_PATH \
   --name=$CONDA_ENV_NM \
   --display-name=$CONDA_DISP_NM
