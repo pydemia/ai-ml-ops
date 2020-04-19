@@ -140,16 +140,8 @@ else
     -n $CONDA_ENV_NM \
     python=$PY_VER \
     --file $BASE_ENVFILE
+  
 fi
-
-
-#python -m ipykernel install --prefix=$CONDA_PATH --name=$CONDA_ENV_NM
-# python -m nb_conda_kernels install $CONDA_PATH/envs/$CONDA_ENV_NM
-
-$CONDA_PATH/env/$CONDA_ENV_NM/bin/python -m ipykernel install \
-  --prefix=$CONDA_PATH \
-  --name=$CONDA_ENV_NM \
-  --display-name=$CONDA_DISP_NM
 
 
 if [[ -n $PIP_PKG_REQ ]]; then
@@ -158,17 +150,17 @@ if [[ -n $PIP_PKG_REQ ]]; then
     --ignore-installed
 fi
 
-# bash -c "conda activate $CONDA_ENV_NM && \
-# conda install ipykernel -y && \
-# python -m ipykernel install \
-#   --name $CONDA_ENV_NM \
-#   --display-name $CONDA_DISP_NM && \
-# if [[ -n $PIP_PKG_REQ ]]; then
-#   pip install -r $PIP_PKG_REQ \
-#     --ignore-installed \
-# fi && \
-# conda install -c conda-forge protobuf -y && \
-# conda deactivate
-# "
+conda install -n $CONDA_ENV_NM -c conda-forge \
+  protopuf -y
+
+
+#python -m ipykernel install --prefix=$CONDA_PATH --name=$CONDA_ENV_NM
+# python -m nb_conda_kernels install $CONDA_PATH/envs/$CONDA_ENV_NM
+$CONDA_PATH/envs/$CONDA_ENV_NM/bin/pip install ipykernel && \
+$CONDA_PATH/envs/$CONDA_ENV_NM/bin/python -m ipykernel install \
+  --prefix=$CONDA_PATH \
+  --name=$CONDA_ENV_NM \
+  --display-name=$CONDA_DISP_NM
+
 
 echo "$CONDA_ENV_NM has been installed."

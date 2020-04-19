@@ -8,9 +8,9 @@ SHELL ["/bin/bash", "-c"]
 
 
 RUN apt-get update && \
-    apt-get install -y sudo \
+    apt-get install -y \
     build-essential curl \
-    vim htop \
+    vim htop sudo \
     libcurl4-openssl-dev \
     libssl-dev wget \
     git \
@@ -45,9 +45,11 @@ RUN apt-get install -y \
 
 
 ARG CONDA_USER="pydemia"
+ARG CONDA_ADMIN="conda"
 ARG CONDA_GROUP="conda"
 # ARG CONDA_UID="1000"
 # ARG CONDA_GID="100"
+ARG CONDA_USER_ROOT="${CONDA_USER}_root"
 
 ENV CONDA_PATH "/opt/conda"
 ENV PATH "$CONDA_PATH/bin:$CONDA_PATH/sbin:$CONDA_PATH/condabin:$PATH"
@@ -62,8 +64,10 @@ ENV JUPYTER_DATA_DIR "$CONDA_PATH/share/jupyter"
 # `-r` option: For system group(gid<1000), which is prior to user group(gid>=1000)
 RUN groupadd -r $CONDA_GROUP && \
     #useradd -m -G conda -p $(openssl passwd -1 password) $CONDA_USER && \
-    useradd -m -G $CONDA_GROUP $CONDA_USER && \
-    # usermod -a -G $CONDA_GROUP $CONDA_USER && \
+    useradd -m -g $CONDA_GROUP $CONDA_ADMIN && \
+    useradd -m -g $CONDA_GROUP -p $(openssl passwd -1 $CONDA_USER) $CONDA_USER && \
+    usermod -a -G sudo $CONDA_USER && \
+    useradd -m -g $CONDA_GROUP --non-unique --uid 0 $CONDA_USER_ROOT && \
     usermod -a -G $CONDA_GROUP root
 
 
@@ -95,6 +99,10 @@ USER root
 RUN conda init bash && \
     conda init zsh
 
+USER $CONDA_ADMIN
+RUN conda init bash && \
+    conda init zsh
+
 USER $CONDA_USER
 RUN conda init bash && \
     conda init zsh
@@ -105,25 +113,39 @@ USER root
 
 # RUN chmod 770 -R $CONDA_PATH
 RUN mkdir -p $JUPYTER_DATA_DIR && \
+    # chown -R $CODA_ADMIN:$CONDA_GROUP $JUPYTER_DATA_DIR && \
     chgrp -R $CONDA_GROUP $JUPYTER_DATA_DIR && \
     chmod 770 -R $JUPYTER_DATA_DIR
 
 RUN mkdir -p $JUPYTER_CONFIG_DIR && \
+    # chown -R $CODA_ADMIN:$CONDA_GROUP $JUPYTER_DATA_DIR && \
     chgrp -R $CONDA_GROUP $JUPYTER_CONFIG_DIR && \
     chmod 770 -R $JUPYTER_CONFIG_DIR
 
+# COPY --chown=$CODA_ADMIN:$CONDA_GROUP \
+#    jupyter_notebook_config.py $JUPYTER_CONFIG_DIR/jupyter_notebook_config.py
 COPY jupyter_notebook_config.py $JUPYTER_CONFIG_DIR/jupyter_notebook_config.py
-RUN chgrp -R $CONDA_GROUP $JUPYTER_CONFIG_DIR && \
-    chmod 770 -R $JUPYTER_CONFIG_DIR
+RUN chown $CONDA_ADMIN:$CONDA_GROUP $JUPYTER_CONFIG_DIR/jupyter_notebook_config.py && \
+    chmod 770 $JUPYTER_CONFIG_DIR/jupyter_notebook_config.py
+
+
+# RUN chgrp -R $CONDA_GROUP $CONDA_PATH && \
+#     chmod 770 -R $CONDA_PATH
+# RUN chown -R $CODA_ADMIN:$CONDA_GROUP $CONDA_PATH && \
+#     chmod 770 -R $CONDA_PATH
 
 
 RUN sg - $CONDA_GROUP "conda install \
+    ipython jupyter notebook \
     nb_conda ipykernel ipyparallel -y && \
     conda install -c conda-forge \
     ipywidgets \
     nb_conda_kernels \
     -y && \
     pip install tensorboard jupyter_tensorboard"
+
+RUN sg - $CONDA_GROUP "conda install -c conda-forge \
+    jupyterhub notebook -y"
 
 # Prevent duplicated conda env list
 RUN sg - $CONDA_GROUP "python -m nb_conda_kernels.install -v --disable"
@@ -226,6 +248,13 @@ RUN chgrp -R $CONDA_GROUP $WORKDIR/converter_scripts/ && \
 
 RUN sg - $CONDA_GROUP "mkdir -p $WORKDIR/notebooks"
 # RUN chmod 775 -R $WORKDIR
+
+
+RUN chgrp -R $CONDA_GROUP $CONDA_PATH && \
+    chmod 770 -R $CONDA_PATH
+RUN chgrp -R $CONDA_GROUP $WORKDIR && \
+    chmod 770 -R $CONDA_PATH
+
 
 WORKDIR $WORKDIR
 
