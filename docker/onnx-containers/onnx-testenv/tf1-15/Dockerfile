@@ -245,15 +245,17 @@ USER $CONDA_USER
 
 
 RUN mkdir -p $WORKDIR
-RUN mkdir -p $WORKDIR/notebooks
 RUN mkdir -p $WORKDIR/converter_scripts && \
-    mkdir -p $WORKDIR/inference_demos
+    mkdir -p $WORKDIR/inference_demos && \
+    mkdir -p $WORKDIR/notebooks
 COPY converter_scripts/ $WORKDIR/converter_scripts/
 COPY inference_demos/ $WORKDIR/inference_demos/
+COPY notebooks/ $WORKDIR/notebooks/
 
 USER root
 RUN chgrp -R $CONDA_GROUP $WORKDIR/converter_scripts/ && \
     chgrp -R $CONDA_GROUP $WORKDIR/inference_demos/ && \
+    chgrp -R $CONDA_GROUP $WORKDIR/notebooks/ && \
     chmod 775 -R $WORKDIR/converter_scripts && \
     chmod 775 -R $WORKDIR/inference_demos && \
     chmod 775 -R $WORKDIR/notebooks
