@@ -248,6 +248,7 @@ RUN mkdir -p $WORKDIR
 RUN mkdir -p $WORKDIR/converter_scripts && \
     mkdir -p $WORKDIR/inference_demos && \
     mkdir -p $WORKDIR/notebooks
+
 COPY converter_scripts/ $WORKDIR/converter_scripts/
 COPY inference_demos/ $WORKDIR/inference_demos/
 COPY notebooks/ $WORKDIR/notebooks/
