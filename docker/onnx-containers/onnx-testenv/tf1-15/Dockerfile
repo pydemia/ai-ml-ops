@@ -171,6 +171,10 @@ RUN chgrp $CONDA_GROUP install_new_kernel.sh && \
     chmod +x install_new_kernel.sh
 
 
+# For onnx(INSTALL IN NON-CONDA ENVIRONMENT)
+RUN apt install cmake protobuf-compiler libprotoc-dev -y
+
+
 COPY requirements-tf1-15.txt requirements-tf1-15.txt
 RUN sg - $CONDA_GROUP "./install_new_kernel.sh \
     -v=3.7 \
