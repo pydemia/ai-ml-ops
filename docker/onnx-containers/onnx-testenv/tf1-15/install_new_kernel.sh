@@ -103,7 +103,7 @@ done
 #                 CONDA_ENV_NM="py37-tf2-1"
 #                 ;;
 #             d)
-#                 CONDA_DISP_NM="Python3.7-tf2.1 (conda env)"
+#                 CONDA_DISP_NM=$CONDA_ENV_NM
 #                 ;;
 #             e)
 #                 BASE_ENVFILE=""
@@ -120,7 +120,7 @@ done
 # fi
 
 
-if [[ -n $CONDA_DISP_NM ]]; then
+if [[ -z $CONDA_DISP_NM ]]; then
   CONDA_DISP_NM=$CONDA_ENV_NM
 fi
 
@@ -133,7 +133,7 @@ echo "PIP_PKG_REQ=$PIP_PKG_REQ"
 
 
 if [[ -z $BASE_ENVFILE ]]; then
-  conda create -n "$CONDA_ENV_NM" python="$PY_VER" -y --quiet
+  conda create -n "$CONDA_ENV_NM" python="$PY_VER" --quiet -y
 else
   # envsubst < "$BASE_ENVFILE" > "conda_envfile.yaml" && \
   conda env create  --quiet \
@@ -143,7 +143,7 @@ else
   
 fi
 
-
+$CONDA_PATH/envs/$CONDA_ENV_NM/bin/pip install --upgrade pip
 if [[ -n $PIP_PKG_REQ ]]; then
   $CONDA_PATH/envs/$CONDA_ENV_NM/bin/pip install \
     -r $PIP_PKG_REQ \
@@ -151,7 +151,12 @@ if [[ -n $PIP_PKG_REQ ]]; then
 fi
 
 conda install -n $CONDA_ENV_NM -c conda-forge \
-  protopuf -y
+  protobuf -y
+# conda install -n $CONDA_ENV_NM -c pytorch \
+#   pytorch==1.4.0 \
+#   torchvision==0.5.0 \
+#   cudatoolkit=10.1
+
 
 
 #python -m ipykernel install --prefix=$CONDA_PATH --name=$CONDA_ENV_NM

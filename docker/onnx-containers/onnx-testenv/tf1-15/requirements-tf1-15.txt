@@ -1,16 +1,19 @@
+pip >= 20.0.0
+setuptools >= 45.0.0
+
 numpy==1.16.0
 # jupyter==1.0.0
 six==1.10.0
 opencv-python>=3.4.5, <4.0
-matplotlib==2.1.1
+matplotlib>=2.1.1
 pandas==0.24.0
 pillow==7.0.0
 scipy==1.0.0
 
-coremltools==2.0
+coremltools==3.0
 
 tensorflow==1.15.2
-protopuf
+protobuf
 tensorboard
 keras==2.1.6
 keras2onnx
@@ -20,7 +23,6 @@ skl2onnx
 
 tf2onnx
 
-pytorch==1.5
 torchvision==0.2.1
 torch==1.0.1
 
@@ -31,7 +33,7 @@ svm==0.1.0
 glibc==0.6.1
 lightgbm==2.2.3
 
-cntk==2.6
+# cntk==2.6  # not for python3.7 yet.
 
 h5py==2.8.0
 mxnet==1.2.0
