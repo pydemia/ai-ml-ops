@@ -231,20 +231,26 @@ RUN sg - $CONDA_GROUP "mkdir $WORKDIR" && \
     chown root:conda $WORKDIR && \
     chmod g+srwx $WORKDIR
 
-RUN mkdir /repo
-RUN sg - $CONDA_GROUP "git clone https://github.com/tensorflow/tensorflow /repo/tensorflow && \
-    cd /repo/tensorflow && \
-    bazel build tensorflow/tools/graph_transforms:summarize_graph"
+RUN sg - $CONDA_GROUP "git clone https://github.com/tensorflow/tensorflow $WORKDIR/tensorflow-git && \
+    cd $WORKDIR/tensorflow-git && \
+    bazel build tensorflow/tools/graph_transforms:summarize_graph && \
+    bazel build tensorflow/tools/graph_transforms:transform_graph"
     #--action_env PYTHON_BIN_PATH=/usr/bin/python3
     #--host_javabase=@local_jdk//:jdk
-RUN ln -s "/repo/tensorflow/bazel-bin/tensorflow/tools/graph_transforms/summarize_graph" \
+RUN ln -s "$WORKDIR/tensorflow-git/bazel-bin/tensorflow/tools/graph_transforms/summarize_graph" \
     /usr/local/bin/summarize_graph
+RUN ln -s "$WORKDIR/tensorflow-git/bazel-bin/tensorflow/tools/graph_transforms/transform_graph" \
+    /usr/local/bin/transform_graph
 
+
+# bazel build tensorflow/python/tools:saved_model_cli && \
+# bazel build tensorflow/python/tools:freeze_graph && \
+# bazel build tensorflow/python/tools:optimize_for_inference
 
 USER $CONDA_USER
 
 
-RUN mkdir -p $WORKDIR
+# RUN mkdir -p $WORKDIR
 RUN mkdir -p $WORKDIR/converter_scripts && \
     mkdir -p $WORKDIR/inference_demos && \
     mkdir -p $WORKDIR/notebooks
@@ -254,12 +260,8 @@ COPY inference_demos/ $WORKDIR/inference_demos/
 COPY notebooks/ $WORKDIR/notebooks/
 
 USER root
-RUN chgrp -R $CONDA_GROUP $WORKDIR/converter_scripts/ && \
-    chgrp -R $CONDA_GROUP $WORKDIR/inference_demos/ && \
-    chgrp -R $CONDA_GROUP $WORKDIR/notebooks/ && \
-    chmod 775 -R $WORKDIR/converter_scripts && \
-    chmod 775 -R $WORKDIR/inference_demos && \
-    chmod 775 -R $WORKDIR/notebooks
+RUN chgrp -R $CONDA_GROUP $WORKDIR && \
+    chmod 775 -R $WORKDIR
 
 
 
