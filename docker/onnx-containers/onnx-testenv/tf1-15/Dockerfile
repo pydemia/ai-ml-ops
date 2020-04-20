@@ -13,7 +13,7 @@ RUN apt-get update && \
     vim htop sudo \
     libcurl4-openssl-dev \
     libssl-dev wget \
-    git \
+    git cmake \
     python3-pip && \
     pip3 install --upgrade pip
 

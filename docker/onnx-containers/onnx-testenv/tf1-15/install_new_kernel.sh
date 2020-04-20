@@ -151,7 +151,7 @@ if [[ -n $PIP_PKG_REQ ]]; then
 fi
 
 conda install -n $CONDA_ENV_NM -c conda-forge \
-  protobuf -y
+  protobuf cmake -y
 # conda install -n $CONDA_ENV_NM -c pytorch \
 #   pytorch==1.4.0 \
 #   torchvision==0.5.0 \
