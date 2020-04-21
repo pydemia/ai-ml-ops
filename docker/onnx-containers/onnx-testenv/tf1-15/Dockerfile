@@ -153,7 +153,6 @@ RUN sg - $CONDA_GROUP "python -m nb_conda_kernels.install -v --disable"
 
 RUN sg - $CONDA_GROUP "conda install -c conda-forge \
     jupyter_contrib_nbextensions -y && \
-    jupyter contrib nbextension install && \
     conda install -c conda-forge jupyter_nbextensions_configurator -y && \
     jupyter nbextensions_configurator enable && \
     jupyter nbextension enable codefolding/main && \
