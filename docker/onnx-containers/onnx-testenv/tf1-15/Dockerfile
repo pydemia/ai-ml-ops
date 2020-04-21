@@ -151,7 +151,9 @@ RUN sg - $CONDA_GROUP "conda install -c conda-forge \
 RUN sg - $CONDA_GROUP "python -m nb_conda_kernels.install -v --disable"
 
 
-RUN sg - $CONDA_GROUP "conda install -c conda-forge jupyter_contrib_nbextensions -y && \
+RUN sg - $CONDA_GROUP "conda install -c conda-forge \
+    jupyter_contrib_nbextensions -y && \
+    jupyter contrib nbextension install && \
     conda install -c conda-forge jupyter_nbextensions_configurator -y && \
     jupyter nbextensions_configurator enable && \
     jupyter nbextension enable codefolding/main && \
@@ -229,7 +231,7 @@ RUN npm install -g @bazel/bazelisk && \
 
 # RUN setfacl -Rm u::rwx,g:$CONDA_GROUP:rwx,m::rwx,o::0 $WORKDIR
 
-ARG WORKDIR="/workspace"
+ENV WORKDIR="/workspace"
 
 RUN sg - $CONDA_GROUP "mkdir $WORKDIR" && \
     chown root:conda $WORKDIR && \
@@ -257,7 +259,8 @@ USER $CONDA_USER
 # RUN mkdir -p $WORKDIR
 RUN mkdir -p $WORKDIR/converter_scripts && \
     mkdir -p $WORKDIR/inference_demos && \
-    mkdir -p $WORKDIR/notebooks
+    mkdir -p $WORKDIR/notebooks && \
+    mkdir -p $WORKDIR/trained_models
 
 COPY converter_scripts/ $WORKDIR/converter_scripts/
 COPY inference_demos/ $WORKDIR/inference_demos/
