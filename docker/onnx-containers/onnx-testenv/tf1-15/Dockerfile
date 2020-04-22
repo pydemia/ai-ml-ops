@@ -172,9 +172,6 @@ RUN sg - $CONDA_GROUP "mkdir -p $JUPYTER_DATA_DIR/nbextensions/jupyter_themes &&
     jupyter nbextension enable jupyter_themes/theme_selector"
 
 
-COPY pymagic.py $CONDA_PATH/bin/pysh
-RUN chgrp $CONDA_GROUP $CONDA_PATH/bin/pysh && \
-    chmod 775 conda
 # Install Python Kernels: with `conda`
 # COPY --chown=root:$CONDA_GROUP install_new_kernel.sh install_new_kernel.sh
 COPY install_new_kernel.sh install_new_kernel.sh

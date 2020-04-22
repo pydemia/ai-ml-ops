@@ -57,4 +57,3 @@ onnxmltools==1.6.1
 -e git+https://github.com/onnx/onnx#egg=onnx
 -e git+https://github.com/onnx/keras-onnx#egg=keras2onnx
 -e git+https://github.com/onnx/tensorflow-onnx#egg=tf2onnx
-
