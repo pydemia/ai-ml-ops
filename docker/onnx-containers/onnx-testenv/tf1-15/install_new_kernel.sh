@@ -157,6 +157,7 @@ conda install -n $CONDA_ENV_NM -c conda-forge \
 #   torchvision==0.5.0 \
 #   cudatoolkit=10.1
 
+pip install ipymagic
 
 
 #python -m ipykernel install --prefix=$CONDA_PATH --name=$CONDA_ENV_NM

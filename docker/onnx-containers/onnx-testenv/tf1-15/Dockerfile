@@ -142,10 +142,11 @@ RUN sg - $CONDA_GROUP "conda install \
     ipywidgets \
     nb_conda_kernels \
     -y && \
-    pip install tensorboard jupyter_tensorboard"
+    pip install tensorboard jupyter_tensorboard jupyterthemes"
 
 RUN sg - $CONDA_GROUP "conda install -c conda-forge \
     jupyterhub notebook -y"
+
 
 # Prevent duplicated conda env list
 RUN sg - $CONDA_GROUP "python -m nb_conda_kernels.install -v --disable"
@@ -157,7 +158,13 @@ RUN sg - $CONDA_GROUP "conda install -c conda-forge \
     jupyter nbextensions_configurator enable && \
     jupyter nbextension enable codefolding/main && \
     jupyter nbextension enable varInspector/main && \
+    jupyter nbextension enable toc2/main && \
+    jupyter nbextension enable execute_time/ExecuteTime && \
     jupyter nbextension enable --py widgetsnbextension"
+
+RUN sg - $CONDA_GROUP "pip install ipymagic && \
+    jupyter nbextension install --py ipymagic && \
+    jupyter nbextension enable ipymagic --py"
 
 RUN sg - $CONDA_GROUP "mkdir -p $JUPYTER_DATA_DIR/nbextensions/jupyter_themes && \
     wget https://raw.githubusercontent.com/merqurio/jupyter_themes/master/theme_selector.js \
@@ -165,11 +172,14 @@ RUN sg - $CONDA_GROUP "mkdir -p $JUPYTER_DATA_DIR/nbextensions/jupyter_themes &&
     jupyter nbextension enable jupyter_themes/theme_selector"
 
 
+COPY pymagic.py $CONDA_PATH/bin/pysh
+RUN chgrp $CONDA_GROUP $CONDA_PATH/bin/pysh && \
+    chmod 775 conda
 # Install Python Kernels: with `conda`
 # COPY --chown=root:$CONDA_GROUP install_new_kernel.sh install_new_kernel.sh
 COPY install_new_kernel.sh install_new_kernel.sh
 RUN chgrp $CONDA_GROUP install_new_kernel.sh && \
-    chmod +x install_new_kernel.sh
+    chmod 770 install_new_kernel.sh
 
 
 # For onnx(INSTALL IN NON-CONDA ENVIRONMENT)
