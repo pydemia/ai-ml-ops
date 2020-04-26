@@ -9,11 +9,11 @@ SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && \
     apt-get install -y \
-    build-essential curl \
+    build-essential \
     vim htop sudo \
     libcurl4-openssl-dev \
-    libssl-dev wget \
-    git cmake \
+    libssl-dev wget curl unzip \
+    git cmake tree \
     python3-pip && \
     pip3 install --upgrade pip
 
@@ -42,6 +42,32 @@ RUN apt-get install -y \
     libxrandr2 libxrandr2 libxss1 \
     libxcursor1 libxcomposite1 libasound2 \
     libxi6 libxtst6
+
+
+# GCLOUD
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && \
+    apt-get update -y && \
+    apt-get install google-cloud-sdk -y
+
+# AWS CLI 1 (for `/usr/bin/python`)
+# RUN apt update && apt add \
+#         ca-certificates \
+#         groff \
+#         less \
+#         python \
+#         py-pip && \
+#     rm -rf /var/cache/apt/* && \
+#     pip3 install pip --upgrade && \
+#     pip3 install awscli
+
+# AWS CLI 2
+RUN curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip && \
+    unzip awscliv2.zip && \
+    ./aws/install
+
+# AZURE CLI
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
 
 ARG CONDA_USER="pydemia"
@@ -159,6 +185,8 @@ RUN sg - $CONDA_GROUP "conda install -c conda-forge \
     jupyter nbextension enable codefolding/main && \
     jupyter nbextension enable varInspector/main && \
     jupyter nbextension enable toc2/main && \
+    jupyter nbextension enable table_beautifier/main && \
+    jupyter nbextension enable freeze/main && \
     jupyter nbextension enable execute_time/ExecuteTime && \
     jupyter nbextension enable --py widgetsnbextension"
 
@@ -166,10 +194,16 @@ RUN sg - $CONDA_GROUP "pip install ipymagic && \
     jupyter nbextension install --py ipymagic && \
     jupyter nbextension enable ipymagic --py"
 
-RUN sg - $CONDA_GROUP "mkdir -p $JUPYTER_DATA_DIR/nbextensions/jupyter_themes && \
-    wget https://raw.githubusercontent.com/merqurio/jupyter_themes/master/theme_selector.js \
-    -O $JUPYTER_DATA_DIR/nbextensions/jupyter_themes/theme_selector.js && \
-    jupyter nbextension enable jupyter_themes/theme_selector"
+# RUN sg - $CONDA_GROUP "mkdir -p $JUPYTER_DATA_DIR/nbextensions/jupyter_themes && \
+#     wget https://raw.githubusercontent.com/merqurio/jupyter_themes/master/theme_selector.js \
+#     -O $JUPYTER_DATA_DIR/nbextensions/jupyter_themes/theme_selector.js && \
+#     jupyter nbextension enable jupyter_themes/theme_selector"
+RUN mkdir -p $JUPYTER_DATA_DIR/nbextensions/jupyter_themes
+COPY theme_selector.js $JUPYTER_DATA_DIR/nbextensions/jupyter_themes/theme_selector.js
+RUN chgrp -R $CONDA_GROUP $JUPYTER_DATA_DIR && \
+    chmod 770 -R $JUPYTER_DATA_DIR && \
+    sg - $CONDA_GROUP "jupyter nbextension enable jupyter_themes/theme_selector"
+
 
 
 # Install Python Kernels: with `conda`
@@ -243,23 +277,130 @@ RUN sg - $CONDA_GROUP "mkdir $WORKDIR" && \
     chown root:conda $WORKDIR && \
     chmod g+srwx $WORKDIR
 
+
+RUN pip install keras_preprocessing
+
 RUN sg - $CONDA_GROUP "git clone https://github.com/tensorflow/tensorflow $WORKDIR/tensorflow-git && \
     cd $WORKDIR/tensorflow-git && \
     bazel build tensorflow/tools/graph_transforms:summarize_graph && \
-    bazel build tensorflow/tools/graph_transforms:transform_graph"
+    bazel build tensorflow/tools/graph_transforms:transform_graph && \
+    bazel build tensorflow/python/tools:freeze_graph && \
+    bazel build tensorflow/python/tools:optimize_for_inference && \
+    cd /"
     #--action_env PYTHON_BIN_PATH=/usr/bin/python3
     #--host_javabase=@local_jdk//:jdk
 RUN ln -s "$WORKDIR/tensorflow-git/bazel-bin/tensorflow/tools/graph_transforms/summarize_graph" \
     /usr/local/bin/summarize_graph
 RUN ln -s "$WORKDIR/tensorflow-git/bazel-bin/tensorflow/tools/graph_transforms/transform_graph" \
     /usr/local/bin/transform_graph
+RUN ln -s "$WORKDIR/tensorflow-git/bazel-bin/tensorflow/python/tools/freeze_graph" \
+    /usr/local/bin/freeze_graph
+RUN ln -s "$WORKDIR/tensorflow-git/bazel-bin/tensorflow/python/tools/optimize_for_inference" \
+    /usr/local/bin/optimize_for_inference
+
+
+# ONNXRuntime Server: 
+# CMake 3.13 or higher is required.  You are running version 3.10.2
+# RUN /usr/bin/pip3 install cmake==3.13.3
+
+# RUN sg - $CONDA_GROUP "git clone \
+#         -b rel-1.1.1 \
+#         --single-branch \
+#         https://github.com/microsoft/onnxruntime $WORKDIR/onnxruntime-git && \
+#     cd $WORKDIR/onnxruntime-git && \
+#     python ./tools/ci_build/build.py \
+#         --build_dir ./build \
+#         --config Release \
+#         --parallel \
+#         --cmake_extra_defines ONNXRUNTIME_VERSION=$(cat ./VERSION_NUMBER) && \
+#     cd /"
+# RUN ln -s "$WORKDIR/onnxruntime-git/"
+
+# # On VM:
+# echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+# apt-get install apt-transport-https ca-certificates gnupg
+# curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+# apt-get update && apt-get install google-cloud-sdk
+
+
+# # On Dockerfile:
+# RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+#     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && \
+#     apt-get update -y && \
+#     apt-get install google-cloud-sdk -y
+
+# apt-get install apt-transport-https ca-certificates gnupg
+# curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+# apt-get update && apt-get install google-cloud-sdk
+
+# git clone \
+#     -b rel-1.1.1 \
+#     --single-branch \
+#     https://github.com/microsoft/onnxruntime $WORKDIR/onnxruntime-git && \
+#     cd $WORKDIR/onnxruntime-git
+
+
+# python ./tools/ci_build/build.py \
+#     --build_dir ./build \
+#     --config Release \
+#     --parallel \
+#     --cmake_extra_defines ONNXRUNTIME_VERSION=$(cat ./VERSION_NUMBER)
+
+# ./build.sh \
+#     --use_openmp \
+#     --build_dir ./build/Linux \
+#     --config Release \
+#     --build_wheel \
+#     --update \
+#     --build \
+#     --parallel \
+#     --cmake_extra_defines ONNXRUNTIME_VERSION=$(cat ./VERSION_NUMBER) && \
+#     pip install ./build/Linux/Release/dist/*.whl
+
+# master
+
+# git clone --single-branch \
+#     -b master \
+#     --recursive \
+#     https://github.com/Microsoft/onnxruntime onnxruntime-git-master
+
+# ln -sfn /usr/lib/python3/dist-packages/apt_pkg.cpython-36m-x86_64-linux-gnu.so apt_pkg.so
+# conda install -c conda-cluster python-apt
+
+
+
+# ./tools/ci_build/github/linux/docker/scripts/install_ubuntu.sh \
+#     -p $(python --version|egrep -o '([0-9]{1,}\.[0-9]{1,})') && \
+# ./tools/ci_build/github/linux/docker/scripts/install_server_deps.sh
+
+# curl -fsSL https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz | tar -zxf - -C /usr/local/
+# export PATH="/usr/local/go/bin:${PATH}"
+
+# mkdir -p /onnxruntime/build && \
+# cd /onnxruntime/build && \
+# cmake -DCMAKE_BUILD_TYPE=Release /onnxruntime/server && \
+# make -j$(getconf _NPROCESSORS_ONLN)
+
+
+
+
+
+
+# COPY summarize_graph_2_1_prebuild summarize_graph
+# COPY transform_graph_2_1_prebuild transform_graph
+# RUN chgrp $CONDA_GROUP summarize_graph && \
+#     chgrp $CONDA_GROUP transform_graph && \
+#     sg - $CONDA_GROUP "cp transform_graph $CONDA_PATH/envs/onnx-tf1-15/bin/ && \
+#     cp summarize_graph $CONDA_PATH/envs/onnx-tf1-15/bin/ && \
+#     cp transform_graph $CONDA_PATH/envs/onnx-tf2-1/bin/ && \
+#     cp summarize_graph $CONDA_PATH/envs/onnx-tf2-1/bin/ && \
+#     rm summarize_graph && \
+#     rm transform_graph"
 
 
 # bazel build tensorflow/python/tools:saved_model_cli && \
 # bazel build tensorflow/python/tools:freeze_graph && \
 # bazel build tensorflow/python/tools:optimize_for_inference
-
-USER $CONDA_USER
 
 
 # RUN mkdir -p $WORKDIR
@@ -271,6 +412,22 @@ RUN mkdir -p $WORKDIR/converter_scripts && \
 COPY converter_scripts/ $WORKDIR/converter_scripts/
 COPY inference_demos/ $WORKDIR/inference_demos/
 COPY notebooks/ $WORKDIR/notebooks/
+COPY trained_models/ $WORKDIR/trained_models/
+
+RUN git clone https://github.com/onnx/tutorials onnx-tutorials && \
+    cp -r onnx-tutorials/tutorials/assets $WORKDIR/notebooks/ && \
+    cp -r onnx-tutorials/tutorials $WORKDIR/onnx-tutorials && \
+    rm -r onnx-tutorials
+
+# RUN git clone --no-checkout https://github.com/onnx/tutorials && \
+#     cd tutorials && \
+#     git config core.sparseCheckout true && \
+#     echo "tutorials/assets/*"> .git/info/sparse-checkout && \
+#     git checkout master && \
+#     cp -r tutorials/assets $WORKDIR/notebooks/ && \
+#     cd ../ && \
+#     rm -r tutorials
+
 
 USER root
 RUN chgrp -R $CONDA_GROUP $WORKDIR && \
@@ -289,7 +446,7 @@ WORKDIR $WORKDIR
 EXPOSE 8888
 
 #USER $CONDA_USER
-USER root
+#USER root
 
 # Launch Jupyter notebook
 SHELL ["/bin/bash", "-c"]
