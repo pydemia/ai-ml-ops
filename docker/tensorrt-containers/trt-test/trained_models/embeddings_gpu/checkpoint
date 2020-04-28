@@ -1,0 +1,3 @@
+model_checkpoint_path: "after-epoch-1"
+all_model_checkpoint_paths: "last_weights/after-epoch-1"
+all_model_checkpoint_paths: "after-epoch-1"

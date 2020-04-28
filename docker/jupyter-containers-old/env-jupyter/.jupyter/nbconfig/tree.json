@@ -1,0 +1,9 @@
+{
+  "load_extensions": {
+    "nbextensions_configurator/tree_tab/main": true,
+    "tree-filter/index": true,
+    "formgrader/main": true,
+    "assignment_list/main": true,
+    "jupyter_tensorboard/tree": true
+  }
+}

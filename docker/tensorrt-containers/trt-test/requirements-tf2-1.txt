@@ -1,0 +1,59 @@
+pip>=20.0.0
+setuptools>=45.0.0
+requests==2.21.0
+
+numpy==1.18.0
+# jupyter==1.0.0
+six==1.12.0
+opencv-python>=3.4.5, <4.0
+matplotlib>=2.1.1
+pandas==1.0.0
+pillow==7.0.0
+scipy==1.4.1
+
+coremltools==3.0
+
+tensorflow==2.1
+protobuf
+tensorboard==2.1
+keras==2.3.0
+keras2onnx
+
+scikit-learn==0.20.0
+skl2onnx
+
+# tf2onnx
+# onnx-tf2-1/lib/python3.7/site-packages/tf2onnx/tfonnx.py in <module>
+#      18 import tensorflow as tf
+#      19 from tensorflow.python.framework import graph_util
+# ---> 20 from tensorflow.tools.graph_transforms import TransformGraph
+#      21 
+#      22 import tf2onnx
+
+# ModuleNotFoundError: No module named 'tensorflow.tools.graph_transforms'
+# torchvision==0.5.0
+# torch==1.4.0
+
+xgboost==1.0.2
+
+svm==0.1.0
+
+glibc==0.6.1
+lightgbm==2.2.3
+
+# cntk==2.7  # not for python3.7 yet.
+
+h5py==2.8.0
+mxnet==1.6.0
+
+# onnx
+onnxconverter-common==1.6.1
+onnxruntime==1.2.0
+onnxmltools==1.6.1
+# onnx==1.6.1
+
+# git+ssh://git@github.com/{acc-name}/{repo-name}.git@{commit}#egg={package-name}
+# -e git+https://github.com/microsoft/onnxconverter-common#egg=onnxconverter-common
+-e git+https://github.com/onnx/onnx#egg=onnx
+-e git+https://github.com/onnx/keras-onnx#egg=keras2onnx
+-e git+https://github.com/onnx/tensorflow-onnx#egg=tf2onnx

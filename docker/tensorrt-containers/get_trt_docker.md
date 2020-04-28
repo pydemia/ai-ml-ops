@@ -109,6 +109,11 @@ WARNING: The NVIDIA Driver was not detected.  GPU functionality will not be avai
 ```
 
 
+```sh
+docker run --rm -it --runtime=nvidia nvcr.io/nvidia/tensorrt:20.03-py3 
+nvidia-docker run --rm -it nvcr.io/nvidia/tensorrt:20.03-py3 
+```
+
 ## docker >= 19.03:
 <https://github.com/NVIDIA/nvidia-docker/blob/master/README.md>
 
@@ -117,7 +122,7 @@ WARNING: The NVIDIA Driver was not detected.  GPU functionality will not be avai
 
 
 ---
-# Upgrade CUDA Toolkit: 10.2
+# Host: Upgrade CUDA Toolkit: 10.2
 
 ```sh
 =====================
@@ -158,9 +163,3 @@ sudo sh cuda_10.2.89_440.33.01_linux.run --silent \
 # Install from Pkg Manager
 sudo apt-get install nvidia-440 nvidia-modprobe nvidia-settings
 ```
-
-
-
-# Run Docker
-
-The NVIDIA Driver was not detected.

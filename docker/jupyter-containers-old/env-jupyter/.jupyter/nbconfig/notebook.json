@@ -1,0 +1,41 @@
+{
+  "load_extensions": {
+    "jupyter-js-widgets/extension": true,
+    "nb_conda/main": true,
+    "nbextensions_configurator/config_menu/main": true,
+    "contrib_nbextensions_help_item/main": true,
+    "codefolding/main": true,
+    "code_prettify/autopep8": false,
+    "hide_header/main": true,
+    "autosavetime/main": true,
+    "ruler/main": true,
+    "toc2/main": true,
+    "python-markdown/main": true,
+    "varInspector/main": true,
+    "move_selected_cells/main": true,
+    "datestamper/main": true,
+    "execute_time/ExecuteTime": true,
+    "livemdpreview/livemdpreview": true,
+    "limit_output/main": false,
+    "jupyter_themes/theme_selector": true,
+    "exercise/main": false,
+    "exercise2/main": true,
+    "create_assignment/main": true,
+    "validate_assignment/main": true
+  },
+  "CodeCell": {
+    "cm_config": {
+      "theme": "cobalt",
+      "font_family": "Hack"
+    }
+  },
+  "limit_output": "100000000000",
+  "Cell": {
+    "cm_config": {
+      "lineNumbers": true
+    }
+  },
+  "livemdpreview": {
+    "show_side_by_side": false
+  }
+}

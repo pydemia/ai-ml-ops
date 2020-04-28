@@ -1,6 +1,0 @@
-#!/bin/bash
-
-jupyter notebook \
---config=/home/pydemia/.jupyter/jupyter_notebook_config.py \
---debug > /home/pydemia/.jupyter/logs/notebook.log 2>&1
-
