@@ -15,8 +15,8 @@ The [scripts](scripts) is a collection of code scripts & snippets.
 
 ## Table of Contents
 
-* docs
-* env
+* documents 
+* environment 
   - aws
   - azure
   - gcp
