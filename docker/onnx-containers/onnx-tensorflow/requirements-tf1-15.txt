@@ -37,7 +37,7 @@ lightgbm==2.2.3
 # cntk==2.6  # not for python3.7 yet.
 
 h5py==2.8.0
-mxnet==1.5.0
+mxnet==1.9.1
 
 onnx
 onnxmltools
