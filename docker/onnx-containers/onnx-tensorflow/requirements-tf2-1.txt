@@ -44,7 +44,7 @@ lightgbm==2.2.3
 # cntk==2.7  # not for python3.7 yet.
 
 h5py==2.8.0
-mxnet==1.6.0
+mxnet==1.9.1
 
 # onnx
 onnxconverter-common==1.6.1
